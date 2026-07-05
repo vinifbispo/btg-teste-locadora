@@ -1,0 +1,6 @@
+.vs/
+.claude/
+*.user
+
+# Solução duplicada gerada pelo Visual Studio na raiz (a real fica em btg-locadora-api/)
+/Locadora.Api.sln
