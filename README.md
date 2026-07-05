@@ -1,3 +1,5 @@
+<img width="721" height="446" alt="Arquitetura teste BTG" src="https://github.com/user-attachments/assets/d884ee62-2654-4061-9075-3ee5d7832253" />
+
 # btg-teste-locadora
 
 Sistema para gerenciar os empréstimos dos seus jogos. Permite a inserção/edição/exclusão de amigos e jogos, além do gerenciamento e visualização dos jogos, dos amigos e de qual jogo está com quem.
