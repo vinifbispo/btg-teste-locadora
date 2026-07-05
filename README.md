@@ -67,7 +67,7 @@ docker compose down
 |-------------------------|------------------------------------------|---------------------------|------------|
 | **Front-end (Web)**     | http://localhost:8081                    | `8081 → 8080`              | Ainda não implementado |
 | **API REST**            | http://localhost:8080                    | `8080 → 8080`               | Swagger em `/swagger` |
-| **SQL Server**          | `localhost,1433`                         | `1433 → 1433`               | User: `sa` / Senha: `Str0ngP@ssw0rd!` / DB: `LocadoraApi` |
+| **SQL Server**          | `localhost,1433`                         | `1433 → 1433`               | User: `sa` / Senha: `Str0ngP@ssw0rd!` / DB: `DB_LOCADORA` |
 | **Redis**               | `localhost:6379`                         | `6379 → 6379`               | Cache distribuído |
 | **Azurite (Blob)**      | http://127.0.0.1:10000/devstoreaccount1  | `10000 → 10000`             | Emulador de Azure Blob Storage |
 
