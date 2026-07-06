@@ -1,5 +1,8 @@
+using Locadora.Api.Validators.Jogos;
 using Locadora.Application;
 using Locadora.Infrastructure;
+using Locadora.Infrastructure.Persistence;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +15,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 
 builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<JogoInputDtoValidator>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -30,6 +34,11 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    await DatabaseInitializer.InitializeAsync(app.Services);
+}
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

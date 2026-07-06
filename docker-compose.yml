@@ -51,7 +51,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       ASPNETCORE_URLS: "http://+:8080"
-      ConnectionStrings__SqlServerDB: "Server=sqlserver,1433;Database=LocadoraApi;User Id=sa;Password=Str0ngP@ssw0rd!;MultipleActiveResultSets=true;TrustServerCertificate=True;Encrypt=False"
+      ConnectionStrings__SqlServerDB: "Server=sqlserver,1433;Database=DB_LOCADORA;User Id=sa;Password=Str0ngP@ssw0rd!;MultipleActiveResultSets=true;TrustServerCertificate=True;Encrypt=False"
       ConnectionStrings__Redis: "redis:6379"
       ConnectionStrings__BlobStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
       BlobStorage__PublicBaseUrl: "http://127.0.0.1:10000/devstoreaccount1"
