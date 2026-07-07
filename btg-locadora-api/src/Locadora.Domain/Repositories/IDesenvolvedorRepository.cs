@@ -7,4 +7,6 @@ public interface IDesenvolvedorRepository
     Task<List<Desenvolvedor>> ListarPorIdsAsync(IEnumerable<int> ids);
 
     Task<List<Desenvolvedor>> ObterOuCriarPorNomesAsync(IEnumerable<string> nomes);
+
+    Task<List<Desenvolvedor>> BuscarPorNomeAsync(string termo);
 }

@@ -38,4 +38,11 @@ public class PublicadoraRepository : IPublicadoraRepository
 
         return existentes.Concat(faltantes).ToList();
     }
+
+    public async Task<List<Publicadora>> BuscarPorNomeAsync(string termo)
+        => await _context.Publicadoras
+            .Where(p => p.Nome.Contains(termo))
+            .OrderBy(p => p.Nome)
+            .Take(20)
+            .ToListAsync();
 }

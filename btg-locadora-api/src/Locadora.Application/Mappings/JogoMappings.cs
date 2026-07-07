@@ -10,16 +10,22 @@ internal static class JogoMappings
         Id = jogo.Id,
         Nome = jogo.Nome,
         Generos = jogo.Generos
-            .Select(g => new GeneroDto { Id = g.Id, Nome = g.Nome })
+            .Select(g => g.ToDto())
             .ToList(),
         Desenvolvedores = jogo.Desenvolvedores
-            .Select(d => new DesenvolvedorDto { Id = d.Id, Nome = d.Nome })
+            .Select(d => d.ToDto())
             .ToList(),
         Publicadoras = jogo.Publicadoras
-            .Select(p => new PublicadoraDto { Id = p.Id, Nome = p.Nome })
+            .Select(p => p.ToDto())
             .ToList(),
         DatasLancamento = jogo.DatasLancamento
             .Select(d => new DataLancamentoDto { Regiao = d.Regiao, Data = d.Data })
             .ToList()
     };
+
+    public static GeneroDto ToDto(this Genero genero) => new() { Id = genero.Id, Nome = genero.Nome };
+
+    public static DesenvolvedorDto ToDto(this Desenvolvedor desenvolvedor) => new() { Id = desenvolvedor.Id, Nome = desenvolvedor.Nome };
+
+    public static PublicadoraDto ToDto(this Publicadora publicadora) => new() { Id = publicadora.Id, Nome = publicadora.Nome };
 }

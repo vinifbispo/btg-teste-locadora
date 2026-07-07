@@ -13,6 +13,9 @@ public static class DependencyInjection
         services.AddScoped<IJogoService, JogoService>();
         services.AddScoped<IAmigoService, AmigoService>();
         services.AddScoped<IEmprestimoService, EmprestimoService>();
+        services.AddScoped<IDesenvolvedorService, DesenvolvedorService>();
+        services.AddScoped<IPublicadoraService, PublicadoraService>();
+        services.AddScoped<IGeneroService, GeneroService>();
 
         services.Configure<JwtSettings>(options =>
         {

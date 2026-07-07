@@ -38,4 +38,11 @@ public class GeneroRepository : IGeneroRepository
 
         return existentes.Concat(faltantes).ToList();
     }
+
+    public async Task<List<Genero>> BuscarPorNomeAsync(string termo)
+        => await _context.Generos
+            .Where(g => g.Nome.Contains(termo))
+            .OrderBy(g => g.Nome)
+            .Take(20)
+            .ToListAsync();
 }
