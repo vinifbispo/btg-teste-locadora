@@ -29,5 +29,17 @@ public class JogoConfiguration : IEntityTypeConfiguration<Jogo>
                 .IsRequired()
                 .HasMaxLength(50);
         });
+
+        builder.HasMany(j => j.Generos)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("JogoGenero"));
+
+        builder.HasMany(j => j.Desenvolvedores)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("JogoDesenvolvedor"));
+
+        builder.HasMany(j => j.Publicadoras)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("JogoPublicadora"));
     }
 }

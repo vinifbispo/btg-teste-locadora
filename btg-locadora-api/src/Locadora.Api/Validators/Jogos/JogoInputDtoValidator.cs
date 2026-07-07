@@ -11,13 +11,22 @@ public class JogoInputDtoValidator : AbstractValidator<JogoInputDto>
             .NotEmpty()
             .MaximumLength(150);
 
-        RuleFor(p => p.Generos)
+        RuleFor(p => p.GeneroIds)
             .NotEmpty();
 
-        RuleFor(p => p.Desenvolvedores)
+        RuleForEach(p => p.GeneroIds)
+            .GreaterThan(0);
+
+        RuleFor(p => p.DesenvolvedorIds)
             .NotEmpty();
 
-        RuleFor(p => p.Publicadoras)
+        RuleForEach(p => p.DesenvolvedorIds)
+            .GreaterThan(0);
+
+        RuleFor(p => p.PublicadoraIds)
             .NotEmpty();
+
+        RuleForEach(p => p.PublicadoraIds)
+            .GreaterThan(0);
     }
 }

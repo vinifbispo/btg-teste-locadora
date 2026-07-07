@@ -78,24 +78,22 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    await DatabaseInitializer.InitializeAsync(app.Services);
 
-    _ = Task.Run(async () =>
+await DatabaseInitializer.InitializeAsync(app.Services);
+
+_ = Task.Run(async () =>
+{
+    try
     {
-        try
-        {
-            using var scope = app.Services.CreateScope();
-            var jogoService = scope.ServiceProvider.GetRequiredService<IJogoService>();
-            await jogoService.ImportarDoJogoExternoAsync();
-        }
-        catch (Exception ex)
-        {
-            app.Logger.LogError(ex, "Falha ao importar jogos da API externa em background.");
-        }
-    });
-}
+        using var scope = app.Services.CreateScope();
+        var jogoService = scope.ServiceProvider.GetRequiredService<IJogoService>();
+        await jogoService.ImportarDoJogoExternoAsync();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Falha ao importar jogos da API externa em background.");
+    }
+});
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

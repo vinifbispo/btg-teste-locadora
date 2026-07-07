@@ -1,5 +1,6 @@
 using Locadora.Application.Dtos;
 using Locadora.Application.Interfaces;
+using Locadora.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,12 +39,20 @@ public class JogosController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(JogoDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<JogoDto>> CreateJogo(
         JogoInputDto input,
         [FromHeader(Name = "Idempotency-Key")] string? chaveIdempotencia)
     {
-        var jogo = await _jogos.CriarAsync(input, chaveIdempotencia);
-        return CreatedAtAction(nameof(GetJogo), new { id = jogo.Id }, jogo);
+        try
+        {
+            var jogo = await _jogos.CriarAsync(input, chaveIdempotencia);
+            return CreatedAtAction(nameof(GetJogo), new { id = jogo.Id }, jogo);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { mensagem = ex.Message });
+        }
     }
 
     [HttpPut("{id:int}")]
@@ -52,8 +61,15 @@ public class JogosController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateJogo(int id, JogoInputDto input)
     {
-        var atualizado = await _jogos.AtualizarAsync(id, input);
-        return atualizado ? NoContent() : NotFound();
+        try
+        {
+            var atualizado = await _jogos.AtualizarAsync(id, input);
+            return atualizado ? NoContent() : NotFound();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { mensagem = ex.Message });
+        }
     }
 
     [HttpDelete("{id:int}")]

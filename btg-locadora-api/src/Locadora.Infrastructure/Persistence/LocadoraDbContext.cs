@@ -12,6 +12,9 @@ public class LocadoraDbContext : DbContext
     public DbSet<Jogo> Jogos { get; set; }
     public DbSet<Amigo> Amigos { get; set; }
     public DbSet<Emprestimo> Emprestimos { get; set; }
+    public DbSet<Genero> Generos { get; set; }
+    public DbSet<Desenvolvedor> Desenvolvedores { get; set; }
+    public DbSet<Publicadora> Publicadoras { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

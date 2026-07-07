@@ -4,6 +4,7 @@ using Locadora.Application.Interfaces;
 using Locadora.Application.Mappings;
 using Locadora.Domain.Caching;
 using Locadora.Domain.Entities;
+using Locadora.Domain.Exceptions;
 using Locadora.Domain.Idempotencia;
 using Locadora.Domain.Integracoes;
 using Locadora.Domain.Repositories;
@@ -15,6 +16,9 @@ namespace Locadora.Application.Services;
 public class JogoService : IJogoService
 {
     private readonly IJogoRepository _jogos;
+    private readonly IGeneroRepository _generos;
+    private readonly IDesenvolvedorRepository _desenvolvedores;
+    private readonly IPublicadoraRepository _publicadoras;
     private readonly IJogoCache _cache;
     private readonly IArmazenamentoIdempotencia _idempotencia;
     private readonly IJogoExternoApiClient _jogoExterno;
@@ -22,12 +26,18 @@ public class JogoService : IJogoService
 
     public JogoService(
         IJogoRepository jogos,
+        IGeneroRepository generos,
+        IDesenvolvedorRepository desenvolvedores,
+        IPublicadoraRepository publicadoras,
         IJogoCache cache,
         IArmazenamentoIdempotencia idempotencia,
         IJogoExternoApiClient jogoExterno,
         ILogger<JogoService> logger)
     {
         _jogos = jogos;
+        _generos = generos;
+        _desenvolvedores = desenvolvedores;
+        _publicadoras = publicadoras;
         _cache = cache;
         _idempotencia = idempotencia;
         _jogoExterno = jogoExterno;
@@ -79,9 +89,9 @@ public class JogoService : IJogoService
         var jogo = new Jogo
         {
             Nome = input.Nome,
-            Generos = input.Generos,
-            Desenvolvedores = input.Desenvolvedores,
-            Publicadoras = input.Publicadoras,
+            Generos = await ResolverGenerosAsync(input.GeneroIds),
+            Desenvolvedores = await ResolverDesenvolvedoresAsync(input.DesenvolvedorIds),
+            Publicadoras = await ResolverPublicadorasAsync(input.PublicadoraIds),
             DatasLancamento = input.DatasLancamento
                 .Select(d => new DataLancamento { Regiao = d.Regiao, Data = d.Data })
                 .ToList()
@@ -107,9 +117,9 @@ public class JogoService : IJogoService
         }
 
         jogo.Nome = input.Nome;
-        jogo.Generos = input.Generos;
-        jogo.Desenvolvedores = input.Desenvolvedores;
-        jogo.Publicadoras = input.Publicadoras;
+        jogo.Generos = await ResolverGenerosAsync(input.GeneroIds);
+        jogo.Desenvolvedores = await ResolverDesenvolvedoresAsync(input.DesenvolvedorIds);
+        jogo.Publicadoras = await ResolverPublicadorasAsync(input.PublicadoraIds);
 
         jogo.DatasLancamento.Clear();
         jogo.DatasLancamento.AddRange(input.DatasLancamento.Select(d => new DataLancamento { Regiao = d.Regiao, Data = d.Data }));
@@ -150,12 +160,16 @@ public class JogoService : IJogoService
 
         var externos = await _jogoExterno.ListarAsync(ct);
 
+        var generos = await _generos.ObterOuCriarPorNomesAsync(externos.SelectMany(e => e.Generos));
+        var desenvolvedores = await _desenvolvedores.ObterOuCriarPorNomesAsync(externos.SelectMany(e => e.Desenvolvedores));
+        var publicadoras = await _publicadoras.ObterOuCriarPorNomesAsync(externos.SelectMany(e => e.Publicadoras));
+
         var jogos = externos.Select(externo => new Jogo
         {
             Nome = externo.Nome,
-            Generos = externo.Generos,
-            Desenvolvedores = externo.Desenvolvedores,
-            Publicadoras = externo.Publicadoras,
+            Generos = generos.Where(g => externo.Generos.Contains(g.Nome, StringComparer.OrdinalIgnoreCase)).ToList(),
+            Desenvolvedores = desenvolvedores.Where(d => externo.Desenvolvedores.Contains(d.Nome, StringComparer.OrdinalIgnoreCase)).ToList(),
+            Publicadoras = publicadoras.Where(p => externo.Publicadoras.Contains(p.Nome, StringComparer.OrdinalIgnoreCase)).ToList(),
             DatasLancamento = externo.DatasLancamento
                 .Select(kv => new DataLancamento { Regiao = kv.Key, Data = kv.Value })
                 .ToList()
@@ -167,5 +181,35 @@ public class JogoService : IJogoService
             await _cache.DefinirAsync(jogo);
 
         _logger.LogInformation("Importação de jogos externos concluída: {Quantidade} jogos importados.", jogos.Count);
+    }
+
+    private async Task<List<Genero>> ResolverGenerosAsync(List<int> ids)
+    {
+        var generos = await _generos.ListarPorIdsAsync(ids);
+        var faltantes = ids.Except(generos.Select(g => g.Id)).ToList();
+        if (faltantes.Count > 0)
+            throw new NotFoundException($"Gênero(s) não encontrado(s): {string.Join(", ", faltantes)}.");
+
+        return generos;
+    }
+
+    private async Task<List<Desenvolvedor>> ResolverDesenvolvedoresAsync(List<int> ids)
+    {
+        var desenvolvedores = await _desenvolvedores.ListarPorIdsAsync(ids);
+        var faltantes = ids.Except(desenvolvedores.Select(d => d.Id)).ToList();
+        if (faltantes.Count > 0)
+            throw new NotFoundException($"Desenvolvedor(es) não encontrado(s): {string.Join(", ", faltantes)}.");
+
+        return desenvolvedores;
+    }
+
+    private async Task<List<Publicadora>> ResolverPublicadorasAsync(List<int> ids)
+    {
+        var publicadoras = await _publicadoras.ListarPorIdsAsync(ids);
+        var faltantes = ids.Except(publicadoras.Select(p => p.Id)).ToList();
+        if (faltantes.Count > 0)
+            throw new NotFoundException($"Publicadora(s) não encontrada(s): {string.Join(", ", faltantes)}.");
+
+        return publicadoras;
     }
 }

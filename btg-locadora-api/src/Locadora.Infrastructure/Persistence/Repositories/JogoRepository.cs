@@ -14,10 +14,18 @@ public class JogoRepository : IJogoRepository
     }
 
     public async Task<IQueryable<Jogo>> ListarAsync()
-        => await Task.FromResult<IQueryable<Jogo>>(_context.Jogos.AsNoTracking());
+        => await Task.FromResult<IQueryable<Jogo>>(_context.Jogos
+            .Include(j => j.Generos)
+            .Include(j => j.Desenvolvedores)
+            .Include(j => j.Publicadoras)
+            .AsNoTracking());
 
     public async Task<Jogo?> ObterPorIdAsync(int id)
-        => await _context.Jogos.FirstOrDefaultAsync(j => j.Id == id);
+        => await _context.Jogos
+            .Include(j => j.Generos)
+            .Include(j => j.Desenvolvedores)
+            .Include(j => j.Publicadoras)
+            .FirstOrDefaultAsync(j => j.Id == id);
 
     public async Task AdicionarAsync(Jogo jogo)
     {

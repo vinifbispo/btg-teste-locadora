@@ -39,6 +39,9 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IJogoRepository, JogoRepository>();
+        services.AddScoped<IGeneroRepository, GeneroRepository>();
+        services.AddScoped<IDesenvolvedorRepository, DesenvolvedorRepository>();
+        services.AddScoped<IPublicadoraRepository, PublicadoraRepository>();
         services.AddScoped<IAmigoRepository, AmigoRepository>();
         services.AddScoped<IEmprestimoRepository, EmprestimoRepository>();
         services.AddSingleton<IArmazenamentoIdempotencia, ArmazenamentoIdempotenciaRedis>();
