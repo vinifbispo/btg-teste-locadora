@@ -1,0 +1,14 @@
+@model AmigoFormViewModel
+@{
+    ViewData["Title"] = "Editar amigo";
+}
+
+<h1>Editar amigo</h1>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <partial name="_AmigoForm" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

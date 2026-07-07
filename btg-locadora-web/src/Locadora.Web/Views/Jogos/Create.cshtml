@@ -1,0 +1,14 @@
+@model JogoFormViewModel
+@{
+    ViewData["Title"] = "Novo jogo";
+}
+
+<h1>Novo jogo</h1>
+
+<form asp-action="Create" method="post">
+    <partial name="_JogoForm" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

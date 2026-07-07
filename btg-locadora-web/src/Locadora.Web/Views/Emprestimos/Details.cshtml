@@ -1,0 +1,37 @@
+@model Emprestimo
+@{
+    ViewData["Title"] = "Detalhes do empréstimo";
+}
+
+<h1>Detalhes do empréstimo</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Jogo</dt>
+    <dd class="col-sm-9">@Model.JogoNome</dd>
+
+    <dt class="col-sm-3">Amigo</dt>
+    <dd class="col-sm-9">@Model.AmigoNome</dd>
+
+    <dt class="col-sm-3">Emprestado em</dt>
+    <dd class="col-sm-9">@Model.DataEmprestimo.ToString("dd/MM/yyyy HH:mm")</dd>
+
+    <dt class="col-sm-3">Devolvido em</dt>
+    <dd class="col-sm-9">
+        @if (Model.DataDevolucao.HasValue)
+        {
+            @Model.DataDevolucao.Value.ToString("dd/MM/yyyy HH:mm")
+        }
+        else
+        {
+            <span class="badge text-bg-warning">Em aberto</span>
+        }
+    </dd>
+</dl>
+
+@if (!Model.DataDevolucao.HasValue)
+{
+    <form asp-action="Devolver" asp-route-id="@Model.Id" method="post" class="d-inline">
+        <button type="submit" class="btn btn-success">Registrar devolução</button>
+    </form>
+}
+<a asp-action="Index" class="btn btn-secondary">Voltar</a>

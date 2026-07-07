@@ -1,0 +1,81 @@
+@model EmprestimoFiltroViewModel
+@{
+    ViewData["Title"] = "Empréstimos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Empréstimos</h1>
+    <a asp-action="Create" class="btn btn-primary">Novo empréstimo</a>
+</div>
+
+<form method="get" class="row g-2 mb-3 align-items-end">
+    <div class="col-auto">
+        <label class="form-label">Jogo</label>
+        <select asp-for="JogoId" asp-items="Model.Jogos" class="form-select">
+            <option value="">Todos</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <label class="form-label">Amigo</label>
+        <select asp-for="AmigoId" asp-items="Model.Amigos" class="form-select">
+            <option value="">Todos</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <div class="form-check mb-2">
+            <input type="checkbox" class="form-check-input" name="apenasAtivos" value="true" id="apenasAtivos" checked="@(Model.ApenasAtivos == true)" />
+            <label class="form-check-label" for="apenasAtivos">Somente ativos</label>
+        </div>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Filtrar</button>
+    </div>
+</form>
+
+@if (!Model.Emprestimos.Any())
+{
+    <p class="text-muted">Nenhum empréstimo encontrado.</p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Jogo</th>
+                <th>Amigo</th>
+                <th>Emprestado em</th>
+                <th>Devolvido em</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var emprestimo in Model.Emprestimos)
+            {
+                <tr>
+                    <td>@emprestimo.JogoNome</td>
+                    <td>@emprestimo.AmigoNome</td>
+                    <td>@emprestimo.DataEmprestimo.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        @if (emprestimo.DataDevolucao.HasValue)
+                        {
+                            @emprestimo.DataDevolucao.Value.ToString("dd/MM/yyyy HH:mm")
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-warning">Em aberto</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@emprestimo.Id" class="btn btn-sm btn-outline-secondary">Detalhes</a>
+                        @if (!emprestimo.DataDevolucao.HasValue)
+                        {
+                            <form asp-action="Devolver" asp-route-id="@emprestimo.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-success">Devolver</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,37 @@
+@model Jogo
+@{
+    ViewData["Title"] = "Detalhes do jogo";
+}
+
+<h1>@Model.Nome</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Gêneros</dt>
+    <dd class="col-sm-9">@string.Join(", ", Model.Generos.Select(g => g.Nome))</dd>
+
+    <dt class="col-sm-3">Desenvolvedores</dt>
+    <dd class="col-sm-9">@string.Join(", ", Model.Desenvolvedores.Select(d => d.Nome))</dd>
+
+    <dt class="col-sm-3">Publicadoras</dt>
+    <dd class="col-sm-9">@string.Join(", ", Model.Publicadoras.Select(p => p.Nome))</dd>
+
+    <dt class="col-sm-3">Datas de lançamento</dt>
+    <dd class="col-sm-9">
+        @if (!Model.DatasLancamento.Any())
+        {
+            <span class="text-muted">Nenhuma data cadastrada.</span>
+        }
+        else
+        {
+            <ul class="list-unstyled mb-0">
+                @foreach (var data in Model.DatasLancamento)
+                {
+                    <li>@data.Regiao: @data.Data</li>
+                }
+            </ul>
+        }
+    </dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+<a asp-action="Index" class="btn btn-secondary">Voltar</a>

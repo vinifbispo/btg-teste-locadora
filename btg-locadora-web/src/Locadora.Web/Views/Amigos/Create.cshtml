@@ -1,0 +1,14 @@
+@model AmigoFormViewModel
+@{
+    ViewData["Title"] = "Novo amigo";
+}
+
+<h1>Novo amigo</h1>
+
+<form asp-action="Create" method="post">
+    <partial name="_AmigoForm" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

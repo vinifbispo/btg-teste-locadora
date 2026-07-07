@@ -48,7 +48,36 @@ btg-locadora-api/
 
 ## btg-locadora-web
 
-Ainda não criado.
+Projeto em **.NET 10** (ASP.NET Core MVC) seguindo o mesmo estilo de Clean Architecture da API, dividido em quatro camadas:
+
+| Camada | Responsabilidade |
+|--------|------------------|
+| **Locadora.Web** | Controllers MVC, Views (Razor), ViewModels e configuração da aplicação (autenticação por cookie, DI). |
+| **Locadora.Web.Application** | Interfaces (`I*Service`, `I*ApiClient`) e services que orquestram as chamadas à API. |
+| **Locadora.Web.Domain** | Modelos, DTOs e exceptions. Sem dependências externas. |
+| **Locadora.Web.Infrastructure** | Clients HTTP (`HttpClient` tipado) que consomem os endpoints da `Locadora.Api`, incluindo o handler que injeta o Bearer token do usuário autenticado. |
+
+```
+btg-locadora-web/
+├── src/
+│   └── Locadora.Web
+│   ├── Locadora.Web.Application
+│   ├── Locadora.Web.Domain
+│   ├── Locadora.Web.Infrastructure
+```
+
+### Funcionalidades
+
+- Login (JWT obtido via `POST /api/Autenticacao/login`, armazenado em cookie de autenticação da aplicação).
+- CRUD de Amigos e Jogos.
+- Registro e devolução de Empréstimos, com filtros por jogo/amigo/status.
+- Seleção de Gêneros, Desenvolvedores e Publicadoras no formulário de Jogos via autocomplete (busca por texto, mín. 3 letras), consumindo os endpoints correspondentes da API.
+
+### Tecnologias
+
+- **.NET 10** / ASP.NET Core MVC
+- **Newtonsoft.Json** para (de)serialização das chamadas HTTP
+- **Bootstrap 5** + **jQuery** (validação client-side)
 
 ## 🐳 Ambiente com Docker Compose
 
@@ -64,7 +93,7 @@ docker compose down
 
 | Serviço                | URL / Endpoint                          | Porta (host → container) | Observação |
 |-------------------------|------------------------------------------|---------------------------|------------|
-| **Front-end (Web)**     | http://localhost:8081                    | `8081 → 8080`              | Ainda não implementado |
+| **Front-end (Web)**     | http://localhost:8081                    | `8081 → 8080`              | Login: `admin` / `Admin@123` |
 | **API REST**            | http://localhost:8080                    | `8080 → 8080`               | Swagger em `/swagger` |
 | **SQL Server**          | `localhost,1433`                         | `1433 → 1433`               | User: `sa` / Senha: `Str0ngP@ssw0rd!` / DB: `DB_LOCADORA` |
 | **Redis**               | `localhost:6379`                         | `6379 → 6379`               | Cache distribuído |

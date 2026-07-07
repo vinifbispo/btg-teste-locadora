@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Locadora.Web.Application/Locadora.Web.Application.csproj" />
+    <Project Path="src/Locadora.Web.Domain/Locadora.Web.Domain.csproj" />
+    <Project Path="src/Locadora.Web.Infrastructure/Locadora.Web.Infrastructure.csproj" />
+    <Project Path="src/Locadora.Web/Locadora.Web.csproj" />
+  </Folder>
+</Solution>

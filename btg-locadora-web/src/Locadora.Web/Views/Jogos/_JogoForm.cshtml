@@ -1,0 +1,77 @@
+@model JogoFormViewModel
+@{
+    var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase };
+    var generosIniciais = System.Text.Json.JsonSerializer.Serialize(Model.Generos, jsonOptions);
+    var desenvolvedoresIniciais = System.Text.Json.JsonSerializer.Serialize(Model.Desenvolvedores, jsonOptions);
+    var publicadorasIniciais = System.Text.Json.JsonSerializer.Serialize(Model.Publicadoras, jsonOptions);
+}
+
+<input type="hidden" asp-for="Id" />
+<input type="hidden" asp-for="ChaveIdempotencia" />
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<div class="mb-3">
+    <label asp-for="Nome" class="form-label"></label>
+    <input asp-for="Nome" class="form-control" autofocus />
+    <span asp-validation-for="Nome" class="text-danger"></span>
+</div>
+
+<div class="mb-3 position-relative" data-autocomplete
+     data-autocomplete-url="@Url.Action("BuscarGeneros", "Jogos")"
+     data-autocomplete-field="Generos"
+     data-autocomplete-selecionados="@generosIniciais">
+    <label class="form-label">Gêneros</label>
+    <input type="text" class="form-control" data-autocomplete-input placeholder="Digite ao menos 3 letras..." autocomplete="off" />
+    <div class="list-group position-absolute w-100 shadow-sm d-none" style="z-index: 1000;" data-autocomplete-lista></div>
+    <div class="mt-2" data-autocomplete-tags></div>
+    <div data-autocomplete-hidden></div>
+    <span asp-validation-for="Generos" class="text-danger"></span>
+</div>
+
+<div class="mb-3 position-relative" data-autocomplete
+     data-autocomplete-url="@Url.Action("BuscarDesenvolvedores", "Jogos")"
+     data-autocomplete-field="Desenvolvedores"
+     data-autocomplete-selecionados="@desenvolvedoresIniciais">
+    <label class="form-label">Desenvolvedores</label>
+    <input type="text" class="form-control" data-autocomplete-input placeholder="Digite ao menos 3 letras..." autocomplete="off" />
+    <div class="list-group position-absolute w-100 shadow-sm d-none" style="z-index: 1000;" data-autocomplete-lista></div>
+    <div class="mt-2" data-autocomplete-tags></div>
+    <div data-autocomplete-hidden></div>
+    <span asp-validation-for="Desenvolvedores" class="text-danger"></span>
+</div>
+
+<div class="mb-3 position-relative" data-autocomplete
+     data-autocomplete-url="@Url.Action("BuscarPublicadoras", "Jogos")"
+     data-autocomplete-field="Publicadoras"
+     data-autocomplete-selecionados="@publicadorasIniciais">
+    <label class="form-label">Publicadoras</label>
+    <input type="text" class="form-control" data-autocomplete-input placeholder="Digite ao menos 3 letras..." autocomplete="off" />
+    <div class="list-group position-absolute w-100 shadow-sm d-none" style="z-index: 1000;" data-autocomplete-lista></div>
+    <div class="mt-2" data-autocomplete-tags></div>
+    <div data-autocomplete-hidden></div>
+    <span asp-validation-for="Publicadoras" class="text-danger"></span>
+</div>
+
+<div class="mb-3" data-datas-lancamento>
+    <label class="form-label">Datas de lançamento</label>
+    <div data-datas-linhas>
+        @for (var i = 0; i < Model.DatasLancamento.Count; i++)
+        {
+            <div class="row g-2 mb-2 align-items-center">
+                <div class="col-5">
+                    <input type="text" class="form-control" placeholder="Região" data-campo="Regiao" name="DatasLancamento[@i].Regiao" value="@Model.DatasLancamento[i].Regiao" />
+                </div>
+                <div class="col-5">
+                    <input type="text" class="form-control" placeholder="Data" data-campo="Data" name="DatasLancamento[@i].Data" value="@Model.DatasLancamento[i].Data" />
+                </div>
+                <div class="col-2">
+                    <button type="button" class="btn btn-outline-danger" data-datas-remover>Remover</button>
+                </div>
+            </div>
+        }
+    </div>
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-datas-adicionar>+ Adicionar data</button>
+</div>
+
+<button type="submit" class="btn btn-primary">Salvar</button>
+<a asp-action="Index" class="btn btn-secondary">Cancelar</a>

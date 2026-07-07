@@ -1,0 +1,23 @@
+@model Amigo
+@{
+    ViewData["Title"] = "Detalhes do amigo";
+}
+
+<h1>Detalhes do amigo</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Nome</dt>
+    <dd class="col-sm-9">@Model.Nome @Model.Sobrenome</dd>
+
+    <dt class="col-sm-3">Idade</dt>
+    <dd class="col-sm-9">@Model.Idade</dd>
+
+    <dt class="col-sm-3">Cadastrado em</dt>
+    <dd class="col-sm-9">@Model.DataCadastro.ToString("dd/MM/yyyy HH:mm")</dd>
+
+    <dt class="col-sm-3">Atualizado em</dt>
+    <dd class="col-sm-9">@Model.DataAtualizacao.ToString("dd/MM/yyyy HH:mm")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+<a asp-action="Index" class="btn btn-secondary">Voltar</a>
