@@ -120,6 +120,42 @@ public class JogoServiceTests
     }
 
     [Fact]
+    public async Task ListarAsync_DeveRetornarPaginaCorretaOrdenadaPorNome()
+    {
+        var jogos = new List<Jogo>
+        {
+            new() { Id = 1, Nome = "Zelda" },
+            new() { Id = 2, Nome = "Mario" },
+            new() { Id = 3, Nome = "Alan Wake" }
+        };
+        _jogos.Setup(r => r.ListarAsync()).ReturnsAsync(new TestAsyncEnumerable<Jogo>(jogos));
+
+        var service = CriarService();
+        var resultado = await service.ListarAsync(busca: null, page: 2, pageSize: 2);
+
+        resultado.TotalCount.Should().Be(3);
+        resultado.TotalPages.Should().Be(2);
+        resultado.Items.Should().ContainSingle(j => j.Nome == "Zelda");
+    }
+
+    [Fact]
+    public async Task ListarAsync_DeveFiltrarPorBusca()
+    {
+        var jogos = new List<Jogo>
+        {
+            new() { Id = 1, Nome = "Zelda" },
+            new() { Id = 2, Nome = "Mario" }
+        };
+        _jogos.Setup(r => r.ListarAsync()).ReturnsAsync(new TestAsyncEnumerable<Jogo>(jogos));
+
+        var service = CriarService();
+        var resultado = await service.ListarAsync(busca: "elda", page: 1, pageSize: 10);
+
+        resultado.TotalCount.Should().Be(1);
+        resultado.Items.Should().ContainSingle(j => j.Nome == "Zelda");
+    }
+
+    [Fact]
     public async Task AtualizarAsync_DeveRetornarFalseQuandoJogoNaoEncontrado()
     {
         _jogos.Setup(r => r.ObterPorIdAsync(It.IsAny<int>())).ReturnsAsync((Jogo?)null);

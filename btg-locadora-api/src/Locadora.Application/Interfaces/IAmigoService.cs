@@ -4,7 +4,7 @@ namespace Locadora.Application.Interfaces;
 
 public interface IAmigoService
 {
-    Task<IEnumerable<AmigoDto>> ListarAsync(string? busca);
+    Task<PagedResultDto<AmigoDto>> ListarAsync(string? busca, int page = 1, int pageSize = 10);
 
     Task<AmigoDto?> ObterPorIdAsync(int id);
 

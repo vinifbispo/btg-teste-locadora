@@ -15,6 +15,8 @@ namespace Locadora.Application.Services;
 
 public class JogoService : IJogoService
 {
+    private const int TamanhoPaginaMaximo = 100;
+
     private readonly IJogoRepository _jogos;
     private readonly IGeneroRepository _generos;
     private readonly IDesenvolvedorRepository _desenvolvedores;
@@ -44,17 +46,30 @@ public class JogoService : IJogoService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<JogoDto>> ListarAsync(string? busca)
+    public async Task<PagedResultDto<JogoDto>> ListarAsync(string? busca, int page = 1, int pageSize = 10)
     {
-        _logger.LogDebug("Listando jogos. Busca={Busca}", busca);
+        page = Math.Max(page, 1);
+        pageSize = Math.Clamp(pageSize, 1, TamanhoPaginaMaximo);
+
+        _logger.LogDebug("Listando jogos. Busca={Busca} Page={Page} PageSize={PageSize}", busca, page, pageSize);
 
         var query = await _jogos.ListarAsync();
 
         if (!string.IsNullOrWhiteSpace(busca))
             query = query.Where(j => j.Nome.Contains(busca));
 
-        var jogos = await query.OrderBy(j => j.Nome).ToListAsync();
-        return jogos.Select(j => j.ToDto()).ToList();
+        query = query.OrderBy(j => j.Nome);
+
+        var totalCount = await query.CountAsync();
+        var jogos = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        return new PagedResultDto<JogoDto>
+        {
+            Items = jogos.Select(j => j.ToDto()).ToList(),
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<JogoDto?> ObterPorIdAsync(int id)

@@ -14,6 +14,8 @@ namespace Locadora.Application.Services;
 
 public class EmprestimoService : IEmprestimoService
 {
+    private const int TamanhoPaginaMaximo = 100;
+
     private readonly IEmprestimoRepository _emprestimos;
     private readonly IJogoRepository _jogos;
     private readonly IAmigoRepository _amigos;
@@ -37,9 +39,14 @@ public class EmprestimoService : IEmprestimoService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<EmprestimoDto>> ListarAsync(int? jogoId, int? amigoId, bool? apenasAtivos)
+    public async Task<PagedResultDto<EmprestimoDto>> ListarAsync(int? jogoId, int? amigoId, bool? apenasAtivos, int page = 1, int pageSize = 10)
     {
-        _logger.LogDebug("Listando empréstimos. JogoId={JogoId} AmigoId={AmigoId} ApenasAtivos={ApenasAtivos}", jogoId, amigoId, apenasAtivos);
+        page = Math.Max(page, 1);
+        pageSize = Math.Clamp(pageSize, 1, TamanhoPaginaMaximo);
+
+        _logger.LogDebug(
+            "Listando empréstimos. JogoId={JogoId} AmigoId={AmigoId} ApenasAtivos={ApenasAtivos} Page={Page} PageSize={PageSize}",
+            jogoId, amigoId, apenasAtivos, page, pageSize);
 
         var query = await _emprestimos.ListarAsync();
 
@@ -52,8 +59,18 @@ public class EmprestimoService : IEmprestimoService
         if (apenasAtivos is true)
             query = query.Where(e => e.DataDevolucao == null);
 
-        var emprestimos = await query.OrderByDescending(e => e.DataEmprestimo).ToListAsync();
-        return emprestimos.Select(e => e.ToDto()).ToList();
+        query = query.OrderByDescending(e => e.DataEmprestimo);
+
+        var totalCount = await query.CountAsync();
+        var emprestimos = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        return new PagedResultDto<EmprestimoDto>
+        {
+            Items = emprestimos.Select(e => e.ToDto()).ToList(),
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<EmprestimoDto?> ObterPorIdAsync(int id)

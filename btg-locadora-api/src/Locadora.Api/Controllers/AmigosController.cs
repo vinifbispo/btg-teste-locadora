@@ -19,10 +19,10 @@ public class AmigosController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<AmigoDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<AmigoDto>>> GetAmigos([FromQuery] string? busca)
+    [ProducesResponseType(typeof(PagedResultDto<AmigoDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResultDto<AmigoDto>>> GetAmigos([FromQuery] string? busca, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var amigos = await _amigos.ListarAsync(busca);
+        var amigos = await _amigos.ListarAsync(busca, page, pageSize);
         return Ok(amigos);
     }
 

@@ -4,7 +4,7 @@ namespace Locadora.Application.Interfaces;
 
 public interface IJogoService
 {
-    Task<IEnumerable<JogoDto>> ListarAsync(string? busca);
+    Task<PagedResultDto<JogoDto>> ListarAsync(string? busca, int page = 1, int pageSize = 10);
 
     Task<JogoDto?> ObterPorIdAsync(int id);
 

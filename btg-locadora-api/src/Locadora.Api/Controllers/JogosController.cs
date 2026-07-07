@@ -20,10 +20,10 @@ public class JogosController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<JogoDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<JogoDto>>> GetJogos([FromQuery] string? busca)
+    [ProducesResponseType(typeof(PagedResultDto<JogoDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResultDto<JogoDto>>> GetJogos([FromQuery] string? busca, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var jogos = await _jogos.ListarAsync(busca);
+        var jogos = await _jogos.ListarAsync(busca, page, pageSize);
         return Ok(jogos);
     }
 

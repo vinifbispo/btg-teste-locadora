@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Locadora.Application.Dtos;
 using Locadora.Application.Services;
+using Locadora.Application.UnitTest.TestHelpers;
 using Locadora.Domain.Caching;
 using Locadora.Domain.Entities;
 using Locadora.Domain.Idempotencia;
@@ -73,6 +74,42 @@ public class AmigoServiceTests
         dto.Should().NotBeNull();
         dto!.Nome.Should().Be("Vinicius");
         _amigos.Verify(r => r.ObterPorIdAsync(It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ListarAsync_DeveRetornarPaginaCorretaOrdenadaPorNome()
+    {
+        var amigos = new List<Amigo>
+        {
+            new() { Id = 1, Nome = "Carlos", Sobrenome = "Silva" },
+            new() { Id = 2, Nome = "Ana", Sobrenome = "Souza" },
+            new() { Id = 3, Nome = "Bruno", Sobrenome = "Costa" }
+        };
+        _amigos.Setup(r => r.ListarAsync()).ReturnsAsync(new TestAsyncEnumerable<Amigo>(amigos));
+
+        var service = CriarService();
+        var resultado = await service.ListarAsync(busca: null, page: 1, pageSize: 2);
+
+        resultado.TotalCount.Should().Be(3);
+        resultado.TotalPages.Should().Be(2);
+        resultado.Items.Select(a => a.Nome).Should().Equal("Ana", "Bruno");
+    }
+
+    [Fact]
+    public async Task ListarAsync_DeveFiltrarPorBusca()
+    {
+        var amigos = new List<Amigo>
+        {
+            new() { Id = 1, Nome = "Carlos", Sobrenome = "Silva" },
+            new() { Id = 2, Nome = "Ana", Sobrenome = "Souza" }
+        };
+        _amigos.Setup(r => r.ListarAsync()).ReturnsAsync(new TestAsyncEnumerable<Amigo>(amigos));
+
+        var service = CriarService();
+        var resultado = await service.ListarAsync(busca: "arlos", page: 1, pageSize: 10);
+
+        resultado.TotalCount.Should().Be(1);
+        resultado.Items.Should().ContainSingle(a => a.Nome == "Carlos");
     }
 
     [Fact]

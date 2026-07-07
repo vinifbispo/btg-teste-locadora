@@ -13,6 +13,8 @@ namespace Locadora.Application.Services;
 
 public class AmigoService : IAmigoService
 {
+    private const int TamanhoPaginaMaximo = 100;
+
     private readonly IAmigoRepository _amigos;
     private readonly IAmigoCache _cache;
     private readonly IArmazenamentoIdempotencia _idempotencia;
@@ -26,17 +28,30 @@ public class AmigoService : IAmigoService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<AmigoDto>> ListarAsync(string? busca)
+    public async Task<PagedResultDto<AmigoDto>> ListarAsync(string? busca, int page = 1, int pageSize = 10)
     {
-        _logger.LogDebug("Listando amigos. Busca={Busca}", busca);
+        page = Math.Max(page, 1);
+        pageSize = Math.Clamp(pageSize, 1, TamanhoPaginaMaximo);
+
+        _logger.LogDebug("Listando amigos. Busca={Busca} Page={Page} PageSize={PageSize}", busca, page, pageSize);
 
         var query = await _amigos.ListarAsync();
 
         if (!string.IsNullOrWhiteSpace(busca))
             query = query.Where(a => a.Nome.Contains(busca) || a.Sobrenome.Contains(busca));
 
-        var amigos = await query.OrderBy(a => a.Nome).ToListAsync();
-        return amigos.Select(a => a.ToDto()).ToList();
+        query = query.OrderBy(a => a.Nome);
+
+        var totalCount = await query.CountAsync();
+        var amigos = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        return new PagedResultDto<AmigoDto>
+        {
+            Items = amigos.Select(a => a.ToDto()).ToList(),
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<AmigoDto?> ObterPorIdAsync(int id)

@@ -20,13 +20,15 @@ public class EmprestimosController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<EmprestimoDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<EmprestimoDto>>> GetEmprestimos(
+    [ProducesResponseType(typeof(PagedResultDto<EmprestimoDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResultDto<EmprestimoDto>>> GetEmprestimos(
         [FromQuery] int? jogoId,
         [FromQuery] int? amigoId,
-        [FromQuery] bool? apenasAtivos)
+        [FromQuery] bool? apenasAtivos,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var emprestimos = await _emprestimos.ListarAsync(jogoId, amigoId, apenasAtivos);
+        var emprestimos = await _emprestimos.ListarAsync(jogoId, amigoId, apenasAtivos, page, pageSize);
         return Ok(emprestimos);
     }
 

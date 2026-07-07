@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Locadora.Application.Dtos;
 using Locadora.Application.Services;
+using Locadora.Application.UnitTest.TestHelpers;
 using Locadora.Domain.Caching;
 using Locadora.Domain.Entities;
 using Locadora.Domain.Exceptions;
@@ -102,6 +103,54 @@ public class EmprestimoServiceTests
 
         await FluentActions.Awaiting(() => service.EmprestarAsync(new EmprestimoInputDto { JogoId = 1, AmigoId = 2 }, chaveIdempotencia: null))
             .Should().ThrowAsync<ConflitoException>();
+    }
+
+    [Fact]
+    public async Task ListarAsync_DeveFiltrarApenasAtivosEPaginar()
+    {
+        var jogo1 = new Jogo { Id = 1, Nome = "Jogo 1" };
+        var jogo2 = new Jogo { Id = 2, Nome = "Jogo 2" };
+        var jogo3 = new Jogo { Id = 3, Nome = "Jogo 3" };
+        var amigo = new Amigo { Id = 1, Nome = "Walanem", Sobrenome = "Figueiredo" };
+
+        var emprestimos = new List<Emprestimo>
+        {
+            new() { Id = 1, JogoId = 1, Jogo = jogo1, AmigoId = 1, Amigo = amigo, DataEmprestimo = DateTime.UtcNow.AddDays(-3), DataDevolucao = DateTime.UtcNow.AddDays(-1) },
+            new() { Id = 2, JogoId = 2, Jogo = jogo2, AmigoId = 1, Amigo = amigo, DataEmprestimo = DateTime.UtcNow.AddDays(-2) },
+            new() { Id = 3, JogoId = 3, Jogo = jogo3, AmigoId = 1, Amigo = amigo, DataEmprestimo = DateTime.UtcNow.AddDays(-1) }
+        };
+        _emprestimos.Setup(r => r.ListarAsync()).ReturnsAsync(new TestAsyncEnumerable<Emprestimo>(emprestimos));
+
+        var service = CriarService();
+        var resultado = await service.ListarAsync(jogoId: null, amigoId: null, apenasAtivos: true, page: 1, pageSize: 10);
+
+        resultado.TotalCount.Should().Be(2);
+        resultado.Items.Should().OnlyContain(e => e.DataDevolucao == null);
+    }
+
+    [Fact]
+    public async Task ListarAsync_DevePaginarResultados()
+    {
+        var jogo1 = new Jogo { Id = 1, Nome = "Jogo 1" };
+        var jogo2 = new Jogo { Id = 2, Nome = "Jogo 2" };
+        var jogo3 = new Jogo { Id = 3, Nome = "Jogo 3" };
+        var amigo = new Amigo { Id = 1, Nome = "Walanem", Sobrenome = "Figueiredo" };
+
+        var emprestimos = new List<Emprestimo>
+        {
+            new() { Id = 1, JogoId = 1, Jogo = jogo1, AmigoId = 1, Amigo = amigo, DataEmprestimo = DateTime.UtcNow.AddDays(-3) },
+            new() { Id = 2, JogoId = 2, Jogo = jogo2, AmigoId = 1, Amigo = amigo, DataEmprestimo = DateTime.UtcNow.AddDays(-2) },
+            new() { Id = 3, JogoId = 3, Jogo = jogo3, AmigoId = 1, Amigo = amigo, DataEmprestimo = DateTime.UtcNow.AddDays(-1) }
+        };
+        _emprestimos.Setup(r => r.ListarAsync()).ReturnsAsync(new TestAsyncEnumerable<Emprestimo>(emprestimos));
+
+        var service = CriarService();
+        var resultado = await service.ListarAsync(jogoId: null, amigoId: null, apenasAtivos: null, page: 1, pageSize: 2);
+
+        resultado.TotalCount.Should().Be(3);
+        resultado.TotalPages.Should().Be(2);
+        resultado.Items.Should().HaveCount(2);
+        resultado.Items.First().Id.Should().Be(3);
     }
 
     [Fact]

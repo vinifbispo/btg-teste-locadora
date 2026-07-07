@@ -4,7 +4,7 @@ namespace Locadora.Application.Interfaces;
 
 public interface IEmprestimoService
 {
-    Task<IEnumerable<EmprestimoDto>> ListarAsync(int? jogoId, int? amigoId, bool? apenasAtivos);
+    Task<PagedResultDto<EmprestimoDto>> ListarAsync(int? jogoId, int? amigoId, bool? apenasAtivos, int page = 1, int pageSize = 10);
 
     Task<EmprestimoDto?> ObterPorIdAsync(int id);
 
