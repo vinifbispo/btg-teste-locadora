@@ -19,9 +19,10 @@ public class GeneroRepository : IGeneroRepository
     public async Task<List<Genero>> ObterOuCriarPorNomesAsync(IEnumerable<string> nomes)
     {
         var nomesDistintos = nomes.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        var nomesEmMinusculo = nomesDistintos.Select(n => n.ToLower()).ToList();
 
         var existentes = await _context.Generos
-            .Where(g => nomesDistintos.Contains(g.Nome))
+            .Where(g => nomesEmMinusculo.Contains(g.Nome.ToLower()))
             .ToListAsync();
 
         var faltantes = nomesDistintos

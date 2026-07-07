@@ -19,9 +19,10 @@ public class PublicadoraRepository : IPublicadoraRepository
     public async Task<List<Publicadora>> ObterOuCriarPorNomesAsync(IEnumerable<string> nomes)
     {
         var nomesDistintos = nomes.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        var nomesEmMinusculo = nomesDistintos.Select(n => n.ToLower()).ToList();
 
         var existentes = await _context.Publicadoras
-            .Where(p => nomesDistintos.Contains(p.Nome))
+            .Where(p => nomesEmMinusculo.Contains(p.Nome.ToLower()))
             .ToListAsync();
 
         var faltantes = nomesDistintos

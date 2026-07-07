@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Locadora.Application\Locadora.Application.csproj" />
+    <ProjectReference Include="..\..\src\Locadora.Infrastructure\Locadora.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

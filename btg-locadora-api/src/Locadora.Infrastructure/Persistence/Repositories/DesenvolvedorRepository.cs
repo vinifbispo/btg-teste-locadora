@@ -19,9 +19,10 @@ public class DesenvolvedorRepository : IDesenvolvedorRepository
     public async Task<List<Desenvolvedor>> ObterOuCriarPorNomesAsync(IEnumerable<string> nomes)
     {
         var nomesDistintos = nomes.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        var nomesEmMinusculo = nomesDistintos.Select(n => n.ToLower()).ToList();
 
         var existentes = await _context.Desenvolvedores
-            .Where(d => nomesDistintos.Contains(d.Nome))
+            .Where(d => nomesEmMinusculo.Contains(d.Nome.ToLower()))
             .ToListAsync();
 
         var faltantes = nomesDistintos
