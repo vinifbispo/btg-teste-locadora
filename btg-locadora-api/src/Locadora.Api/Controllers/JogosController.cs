@@ -75,9 +75,17 @@ public class JogosController : ControllerBase
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> DeleteJogo(int id)
     {
-        var removido = await _jogos.RemoverAsync(id);
-        return removido ? NoContent() : NotFound();
+        try
+        {
+            var removido = await _jogos.RemoverAsync(id);
+            return removido ? NoContent() : NotFound();
+        }
+        catch (ConflitoException ex)
+        {
+            return Conflict(new { mensagem = ex.Message });
+        }
     }
 }

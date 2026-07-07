@@ -4,6 +4,7 @@ using Locadora.Application.Services;
 using Locadora.Application.UnitTest.TestHelpers;
 using Locadora.Domain.Caching;
 using Locadora.Domain.Entities;
+using Locadora.Domain.Exceptions;
 using Locadora.Domain.Idempotencia;
 using Locadora.Domain.Repositories;
 using Microsoft.Extensions.Logging;
@@ -13,11 +14,13 @@ namespace Locadora.Application.UnitTest.Services;
 public class AmigoServiceTests
 {
     private readonly Mock<IAmigoRepository> _amigos = new();
+    private readonly Mock<IEmprestimoRepository> _emprestimos = new();
     private readonly Mock<IAmigoCache> _cache = new();
     private readonly Mock<IArmazenamentoIdempotencia> _idempotencia = new();
 
     private AmigoService CriarService() => new(
         _amigos.Object,
+        _emprestimos.Object,
         _cache.Object,
         _idempotencia.Object,
         new Mock<ILogger<AmigoService>>().Object);
@@ -128,11 +131,27 @@ public class AmigoServiceTests
     {
         var amigo = new Amigo { Id = 1, Nome = "Walanem", Sobrenome = "Figueiredo" };
         _amigos.Setup(r => r.ObterPorIdAsync(1)).ReturnsAsync(amigo);
+        _emprestimos.Setup(r => r.ExisteParaAmigoAsync(1)).ReturnsAsync(false);
 
         var service = CriarService();
         var resultado = await service.RemoverAsync(1);
 
         resultado.Should().BeTrue();
         _amigos.Verify(r => r.RemoverAsync(amigo), Times.Once);
+    }
+
+    [Fact]
+    public async Task RemoverAsync_DeveLancarConflitoExceptionQuandoAmigoPossuiEmprestimos()
+    {
+        var amigo = new Amigo { Id = 1, Nome = "Walanem", Sobrenome = "Figueiredo" };
+        _amigos.Setup(r => r.ObterPorIdAsync(1)).ReturnsAsync(amigo);
+        _emprestimos.Setup(r => r.ExisteParaAmigoAsync(1)).ReturnsAsync(true);
+
+        var service = CriarService();
+
+        await FluentActions.Awaiting(() => service.RemoverAsync(1))
+            .Should().ThrowAsync<ConflitoException>();
+
+        _amigos.Verify(r => r.RemoverAsync(It.IsAny<Amigo>()), Times.Never);
     }
 }

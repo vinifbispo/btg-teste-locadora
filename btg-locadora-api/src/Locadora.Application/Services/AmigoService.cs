@@ -4,6 +4,7 @@ using Locadora.Application.Interfaces;
 using Locadora.Application.Mappings;
 using Locadora.Domain.Caching;
 using Locadora.Domain.Entities;
+using Locadora.Domain.Exceptions;
 using Locadora.Domain.Idempotencia;
 using Locadora.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -16,13 +17,20 @@ public class AmigoService : IAmigoService
     private const int TamanhoPaginaMaximo = 100;
 
     private readonly IAmigoRepository _amigos;
+    private readonly IEmprestimoRepository _emprestimos;
     private readonly IAmigoCache _cache;
     private readonly IArmazenamentoIdempotencia _idempotencia;
     private readonly ILogger<AmigoService> _logger;
 
-    public AmigoService(IAmigoRepository amigos, IAmigoCache cache, IArmazenamentoIdempotencia idempotencia, ILogger<AmigoService> logger)
+    public AmigoService(
+        IAmigoRepository amigos,
+        IEmprestimoRepository emprestimos,
+        IAmigoCache cache,
+        IArmazenamentoIdempotencia idempotencia,
+        ILogger<AmigoService> logger)
     {
         _amigos = amigos;
+        _emprestimos = emprestimos;
         _cache = cache;
         _idempotencia = idempotencia;
         _logger = logger;
@@ -131,6 +139,12 @@ public class AmigoService : IAmigoService
         {
             _logger.LogWarning("Remoção falhou: amigo {AmigoId} não encontrado.", id);
             return false;
+        }
+
+        if (await _emprestimos.ExisteParaAmigoAsync(id))
+        {
+            _logger.LogWarning("Remoção falhou: amigo {AmigoId} possui empréstimos associados.", id);
+            throw new ConflitoException("Não é possível remover o amigo pois ele possui empréstimos associados.");
         }
 
         await _amigos.RemoverAsync(amigo);

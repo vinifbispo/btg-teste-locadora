@@ -18,6 +18,7 @@ public class JogoServiceTests
     private readonly Mock<IGeneroRepository> _generos = new();
     private readonly Mock<IDesenvolvedorRepository> _desenvolvedores = new();
     private readonly Mock<IPublicadoraRepository> _publicadoras = new();
+    private readonly Mock<IEmprestimoRepository> _emprestimos = new();
     private readonly Mock<IJogoCache> _cache = new();
     private readonly Mock<IArmazenamentoIdempotencia> _idempotencia = new();
     private readonly Mock<IJogoExternoApiClient> _jogoExterno = new();
@@ -27,6 +28,7 @@ public class JogoServiceTests
         _generos.Object,
         _desenvolvedores.Object,
         _publicadoras.Object,
+        _emprestimos.Object,
         _cache.Object,
         _idempotencia.Object,
         _jogoExterno.Object,
@@ -171,6 +173,7 @@ public class JogoServiceTests
     {
         var jogo = new Jogo { Id = 1, Nome = "GTA VI" };
         _jogos.Setup(r => r.ObterPorIdAsync(1)).ReturnsAsync(jogo);
+        _emprestimos.Setup(r => r.ExisteParaJogoAsync(1)).ReturnsAsync(false);
 
         var service = CriarService();
         var resultado = await service.RemoverAsync(1);
@@ -178,6 +181,21 @@ public class JogoServiceTests
         resultado.Should().BeTrue();
         _jogos.Verify(r => r.RemoverAsync(jogo), Times.Once);
         _cache.Verify(c => c.RemoverAsync(1), Times.Once);
+    }
+
+    [Fact]
+    public async Task RemoverAsync_DeveLancarConflitoExceptionQuandoJogoPossuiEmprestimos()
+    {
+        var jogo = new Jogo { Id = 1, Nome = "GTA VI" };
+        _jogos.Setup(r => r.ObterPorIdAsync(1)).ReturnsAsync(jogo);
+        _emprestimos.Setup(r => r.ExisteParaJogoAsync(1)).ReturnsAsync(true);
+
+        var service = CriarService();
+
+        await FluentActions.Awaiting(() => service.RemoverAsync(1))
+            .Should().ThrowAsync<ConflitoException>();
+
+        _jogos.Verify(r => r.RemoverAsync(It.IsAny<Jogo>()), Times.Never);
     }
 
     [Fact]

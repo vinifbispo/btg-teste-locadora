@@ -55,4 +55,36 @@ public class EmprestimoRepositoryTests
 
         dados.Should().ContainSingle();
     }
+
+    [Fact]
+    public async Task ExisteParaAmigoAsync_DeveRetornarTrueQuandoAmigoPossuiEmprestimo()
+    {
+        var dados = new List<Emprestimo>
+        {
+            new() { Id = 1, JogoId = 10, AmigoId = 5, DataEmprestimo = DateTime.UtcNow }
+        };
+
+        var mockContext = TestDbContextFactory.Create();
+        mockContext.Object.Emprestimos = MockDbSetFactory.Create(dados).Object;
+        var repositorio = new EmprestimoRepository(mockContext.Object);
+
+        (await repositorio.ExisteParaAmigoAsync(5)).Should().BeTrue();
+        (await repositorio.ExisteParaAmigoAsync(999)).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ExisteParaJogoAsync_DeveRetornarTrueQuandoJogoPossuiEmprestimo()
+    {
+        var dados = new List<Emprestimo>
+        {
+            new() { Id = 1, JogoId = 10, AmigoId = 5, DataEmprestimo = DateTime.UtcNow }
+        };
+
+        var mockContext = TestDbContextFactory.Create();
+        mockContext.Object.Emprestimos = MockDbSetFactory.Create(dados).Object;
+        var repositorio = new EmprestimoRepository(mockContext.Object);
+
+        (await repositorio.ExisteParaJogoAsync(10)).Should().BeTrue();
+        (await repositorio.ExisteParaJogoAsync(999)).Should().BeFalse();
+    }
 }

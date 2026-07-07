@@ -10,6 +10,10 @@ public interface IEmprestimoRepository
 
     Task<Emprestimo?> ObterAtivoPorJogoAsync(int jogoId);
 
+    Task<bool> ExisteParaAmigoAsync(int amigoId);
+
+    Task<bool> ExisteParaJogoAsync(int jogoId);
+
     Task AdicionarAsync(Emprestimo emprestimo);
 
     Task AtualizarAsync(Emprestimo emprestimo);

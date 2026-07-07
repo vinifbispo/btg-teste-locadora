@@ -21,6 +21,7 @@ public class JogoService : IJogoService
     private readonly IGeneroRepository _generos;
     private readonly IDesenvolvedorRepository _desenvolvedores;
     private readonly IPublicadoraRepository _publicadoras;
+    private readonly IEmprestimoRepository _emprestimos;
     private readonly IJogoCache _cache;
     private readonly IArmazenamentoIdempotencia _idempotencia;
     private readonly IJogoExternoApiClient _jogoExterno;
@@ -31,6 +32,7 @@ public class JogoService : IJogoService
         IGeneroRepository generos,
         IDesenvolvedorRepository desenvolvedores,
         IPublicadoraRepository publicadoras,
+        IEmprestimoRepository emprestimos,
         IJogoCache cache,
         IArmazenamentoIdempotencia idempotencia,
         IJogoExternoApiClient jogoExterno,
@@ -40,6 +42,7 @@ public class JogoService : IJogoService
         _generos = generos;
         _desenvolvedores = desenvolvedores;
         _publicadoras = publicadoras;
+        _emprestimos = emprestimos;
         _cache = cache;
         _idempotencia = idempotencia;
         _jogoExterno = jogoExterno;
@@ -153,6 +156,12 @@ public class JogoService : IJogoService
         {
             _logger.LogWarning("Remoção falhou: jogo {JogoId} não encontrado.", id);
             return false;
+        }
+
+        if (await _emprestimos.ExisteParaJogoAsync(id))
+        {
+            _logger.LogWarning("Remoção falhou: jogo {JogoId} possui empréstimos associados.", id);
+            throw new ConflitoException("Não é possível remover o jogo pois ele possui empréstimos associados.");
         }
 
         await _jogos.RemoverAsync(jogo);

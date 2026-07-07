@@ -30,6 +30,12 @@ public class EmprestimoRepository : IEmprestimoRepository
             .Where(e => e.JogoId == jogoId && e.DataDevolucao == null)
             .FirstOrDefaultAsync();
 
+    public async Task<bool> ExisteParaAmigoAsync(int amigoId)
+        => await _context.Emprestimos.AnyAsync(e => e.AmigoId == amigoId);
+
+    public async Task<bool> ExisteParaJogoAsync(int jogoId)
+        => await _context.Emprestimos.AnyAsync(e => e.JogoId == jogoId);
+
     public async Task AdicionarAsync(Emprestimo emprestimo)
     {
         _context.Emprestimos.Add(emprestimo);
