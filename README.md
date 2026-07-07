@@ -1,4 +1,4 @@
-<img width="721" height="446" alt="Arquitetura teste BTG" src="https://github.com/user-attachments/assets/d884ee62-2654-4061-9075-3ee5d7832253" />
+<img width="641" height="436" alt="Arquitetura teste BTG" src="https://github.com/user-attachments/assets/7096a663-e6e7-4408-8523-b7dd7fff0923" />
 
 # btg-teste-locadora
 
