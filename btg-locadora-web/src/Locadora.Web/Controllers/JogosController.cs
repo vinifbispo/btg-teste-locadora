@@ -63,10 +63,6 @@ public class JogosController : Controller
     {
         if (model.Generos.Count == 0)
             ModelState.AddModelError(nameof(model.Generos), "Selecione ao menos um gênero.");
-        if (model.Desenvolvedores.Count == 0)
-            ModelState.AddModelError(nameof(model.Desenvolvedores), "Selecione ao menos um desenvolvedor.");
-        if (model.Publicadoras.Count == 0)
-            ModelState.AddModelError(nameof(model.Publicadoras), "Selecione ao menos uma publicadora.");
 
         if (!ModelState.IsValid)
             return View(model);
@@ -100,10 +96,6 @@ public class JogosController : Controller
     {
         if (model.Generos.Count == 0)
             ModelState.AddModelError(nameof(model.Generos), "Selecione ao menos um gênero.");
-        if (model.Desenvolvedores.Count == 0)
-            ModelState.AddModelError(nameof(model.Desenvolvedores), "Selecione ao menos um desenvolvedor.");
-        if (model.Publicadoras.Count == 0)
-            ModelState.AddModelError(nameof(model.Publicadoras), "Selecione ao menos uma publicadora.");
 
         if (!ModelState.IsValid)
             return View(model);

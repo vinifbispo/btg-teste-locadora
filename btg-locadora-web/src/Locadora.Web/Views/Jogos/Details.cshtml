@@ -10,10 +10,14 @@
     <dd class="col-sm-9">@string.Join(", ", Model.Generos.Select(g => g.Nome))</dd>
 
     <dt class="col-sm-3">Desenvolvedores</dt>
-    <dd class="col-sm-9">@string.Join(", ", Model.Desenvolvedores.Select(d => d.Nome))</dd>
+    <dd class="col-sm-9">
+        @(Model.Desenvolvedores.Any() ? string.Join(", ", Model.Desenvolvedores.Select(d => d.Nome)) : "—")
+    </dd>
 
     <dt class="col-sm-3">Publicadoras</dt>
-    <dd class="col-sm-9">@string.Join(", ", Model.Publicadoras.Select(p => p.Nome))</dd>
+    <dd class="col-sm-9">
+        @(Model.Publicadoras.Any() ? string.Join(", ", Model.Publicadoras.Select(p => p.Nome)) : "—")
+    </dd>
 
     <dt class="col-sm-3">Datas de lançamento</dt>
     <dd class="col-sm-9">
