@@ -15,9 +15,12 @@ public class JogoApiClient : IJogoApiClient
 
     public JogoApiClient(HttpClient http) => _http = http;
 
-    public async Task<IEnumerable<Jogo>> ListarAsync(string? busca = null, CancellationToken ct = default)
+    public async Task<PagedResult<Jogo>> ListarAsync(string? busca = null, int page = 1, int pageSize = 10, CancellationToken ct = default)
     {
-        var url = string.IsNullOrWhiteSpace(busca) ? Endpoint : $"{Endpoint}?busca={Uri.EscapeDataString(busca)}";
+        var query = new List<string> { $"page={page}", $"pageSize={pageSize}" };
+        if (!string.IsNullOrWhiteSpace(busca)) query.Add($"busca={Uri.EscapeDataString(busca)}");
+
+        var url = $"{Endpoint}?{string.Join("&", query)}";
 
         _http.DefaultRequestHeaders.Clear();
         _http.SetMediaJson();
@@ -26,7 +29,7 @@ public class JogoApiClient : IJogoApiClient
         await ApiResponseHandler.GarantirSucessoAsync(response, ct);
 
         var corpo = await response.Content.ReadAsStringAsync(ct);
-        return JsonConvert.DeserializeObject<List<Jogo>>(corpo) ?? new List<Jogo>();
+        return JsonConvert.DeserializeObject<PagedResult<Jogo>>(corpo) ?? new PagedResult<Jogo>();
     }
 
     public async Task<Jogo?> ObterPorIdAsync(int id, CancellationToken ct = default)

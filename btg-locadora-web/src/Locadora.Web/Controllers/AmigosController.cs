@@ -16,11 +16,21 @@ public class AmigosController : Controller
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(string? busca)
+    public async Task<IActionResult> Index(string? busca, int page = 1)
     {
-        var amigos = await _amigos.ListarAsync(busca);
-        ViewData["Busca"] = busca;
-        return View(amigos);
+        var resultado = await _amigos.ListarAsync(busca, page);
+
+        var model = new ListaPaginadaViewModel<Domain.Models.Amigo>
+        {
+            Items = resultado.Items,
+            Busca = busca,
+            Page = resultado.Page,
+            PageSize = resultado.PageSize,
+            TotalCount = resultado.TotalCount,
+            TotalPages = resultado.TotalPages
+        };
+
+        return View(model);
     }
 
     public async Task<IActionResult> Details(int id)

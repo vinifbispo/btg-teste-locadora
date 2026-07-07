@@ -15,9 +15,12 @@ public class AmigoApiClient : IAmigoApiClient
 
     public AmigoApiClient(HttpClient http) => _http = http;
 
-    public async Task<IEnumerable<Amigo>> ListarAsync(string? busca = null, CancellationToken ct = default)
+    public async Task<PagedResult<Amigo>> ListarAsync(string? busca = null, int page = 1, int pageSize = 10, CancellationToken ct = default)
     {
-        var url = string.IsNullOrWhiteSpace(busca) ? Endpoint : $"{Endpoint}?busca={Uri.EscapeDataString(busca)}";
+        var query = new List<string> { $"page={page}", $"pageSize={pageSize}" };
+        if (!string.IsNullOrWhiteSpace(busca)) query.Add($"busca={Uri.EscapeDataString(busca)}");
+
+        var url = $"{Endpoint}?{string.Join("&", query)}";
 
         _http.DefaultRequestHeaders.Clear();
         _http.SetMediaJson();
@@ -26,7 +29,7 @@ public class AmigoApiClient : IAmigoApiClient
         await ApiResponseHandler.GarantirSucessoAsync(response, ct);
 
         var corpo = await response.Content.ReadAsStringAsync(ct);
-        return JsonConvert.DeserializeObject<List<Amigo>>(corpo) ?? new List<Amigo>();
+        return JsonConvert.DeserializeObject<PagedResult<Amigo>>(corpo) ?? new PagedResult<Amigo>();
     }
 
     public async Task<Amigo?> ObterPorIdAsync(int id, CancellationToken ct = default)

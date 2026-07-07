@@ -15,10 +15,10 @@ public class EmprestimoService : IEmprestimoService
         _logger = logger;
     }
 
-    public Task<IEnumerable<Emprestimo>> ListarAsync(int? jogoId = null, int? amigoId = null, bool? apenasAtivos = null, CancellationToken ct = default)
+    public Task<PagedResult<Emprestimo>> ListarAsync(int? jogoId = null, int? amigoId = null, bool? apenasAtivos = null, int page = 1, int pageSize = 10, CancellationToken ct = default)
     {
-        _logger.LogDebug("Listando empréstimos. JogoId={JogoId}, AmigoId={AmigoId}, ApenasAtivos={ApenasAtivos}", jogoId, amigoId, apenasAtivos);
-        return _api.ListarAsync(jogoId, amigoId, apenasAtivos, ct);
+        _logger.LogDebug("Listando empréstimos. JogoId={JogoId}, AmigoId={AmigoId}, ApenasAtivos={ApenasAtivos}, Page={Page}", jogoId, amigoId, apenasAtivos, page);
+        return _api.ListarAsync(jogoId, amigoId, apenasAtivos, page, pageSize, ct);
     }
 
     public Task<Emprestimo?> ObterPorIdAsync(int id, CancellationToken ct = default)

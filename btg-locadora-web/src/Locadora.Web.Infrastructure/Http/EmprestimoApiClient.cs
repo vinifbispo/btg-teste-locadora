@@ -15,14 +15,14 @@ public class EmprestimoApiClient : IEmprestimoApiClient
 
     public EmprestimoApiClient(HttpClient http) => _http = http;
 
-    public async Task<IEnumerable<Emprestimo>> ListarAsync(int? jogoId = null, int? amigoId = null, bool? apenasAtivos = null, CancellationToken ct = default)
+    public async Task<PagedResult<Emprestimo>> ListarAsync(int? jogoId = null, int? amigoId = null, bool? apenasAtivos = null, int page = 1, int pageSize = 10, CancellationToken ct = default)
     {
-        var query = new List<string>();
+        var query = new List<string> { $"page={page}", $"pageSize={pageSize}" };
         if (jogoId is > 0) query.Add($"jogoId={jogoId}");
         if (amigoId is > 0) query.Add($"amigoId={amigoId}");
         if (apenasAtivos is not null) query.Add($"apenasAtivos={apenasAtivos.Value.ToString().ToLowerInvariant()}");
 
-        var url = query.Count > 0 ? $"{Endpoint}?{string.Join("&", query)}" : Endpoint;
+        var url = $"{Endpoint}?{string.Join("&", query)}";
 
         _http.DefaultRequestHeaders.Clear();
         _http.SetMediaJson();
@@ -31,7 +31,7 @@ public class EmprestimoApiClient : IEmprestimoApiClient
         await ApiResponseHandler.GarantirSucessoAsync(response, ct);
 
         var corpo = await response.Content.ReadAsStringAsync(ct);
-        return JsonConvert.DeserializeObject<List<Emprestimo>>(corpo) ?? new List<Emprestimo>();
+        return JsonConvert.DeserializeObject<PagedResult<Emprestimo>>(corpo) ?? new PagedResult<Emprestimo>();
     }
 
     public async Task<Emprestimo?> ObterPorIdAsync(int id, CancellationToken ct = default)

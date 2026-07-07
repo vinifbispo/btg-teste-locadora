@@ -29,11 +29,21 @@ public class JogosController : Controller
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(string? busca)
+    public async Task<IActionResult> Index(string? busca, int page = 1)
     {
-        var jogos = await _jogos.ListarAsync(busca);
-        ViewData["Busca"] = busca;
-        return View(jogos);
+        var resultado = await _jogos.ListarAsync(busca, page);
+
+        var model = new ListaPaginadaViewModel<Domain.Models.Jogo>
+        {
+            Items = resultado.Items,
+            Busca = busca,
+            Page = resultado.Page,
+            PageSize = resultado.PageSize,
+            TotalCount = resultado.TotalCount,
+            TotalPages = resultado.TotalPages
+        };
+
+        return View(model);
     }
 
     public async Task<IActionResult> Details(int id)

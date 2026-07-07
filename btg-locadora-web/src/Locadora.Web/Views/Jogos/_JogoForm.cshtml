@@ -20,7 +20,7 @@
      data-autocomplete-url="@Url.Action("BuscarGeneros", "Jogos")"
      data-autocomplete-field="Generos"
      data-autocomplete-selecionados="@generosIniciais">
-    <label class="form-label">Gêneros</label>
+    <label class="form-label">Gêneros <span class="badge text-bg-light text-secondary border fw-normal" title="Campo com busca automática: digite ao menos 3 letras">🔍 busca automática</span></label>
     <input type="text" class="form-control" data-autocomplete-input placeholder="Digite ao menos 3 letras..." autocomplete="off" />
     <div class="list-group position-absolute w-100 shadow-sm d-none" style="z-index: 1000;" data-autocomplete-lista></div>
     <div class="mt-2" data-autocomplete-tags></div>
@@ -32,7 +32,7 @@
      data-autocomplete-url="@Url.Action("BuscarDesenvolvedores", "Jogos")"
      data-autocomplete-field="Desenvolvedores"
      data-autocomplete-selecionados="@desenvolvedoresIniciais">
-    <label class="form-label">Desenvolvedores</label>
+    <label class="form-label">Desenvolvedores <span class="badge text-bg-light text-secondary border fw-normal" title="Campo com busca automática: digite ao menos 3 letras">🔍 busca automática</span></label>
     <input type="text" class="form-control" data-autocomplete-input placeholder="Digite ao menos 3 letras..." autocomplete="off" />
     <div class="list-group position-absolute w-100 shadow-sm d-none" style="z-index: 1000;" data-autocomplete-lista></div>
     <div class="mt-2" data-autocomplete-tags></div>
@@ -44,7 +44,7 @@
      data-autocomplete-url="@Url.Action("BuscarPublicadoras", "Jogos")"
      data-autocomplete-field="Publicadoras"
      data-autocomplete-selecionados="@publicadorasIniciais">
-    <label class="form-label">Publicadoras</label>
+    <label class="form-label">Publicadoras <span class="badge text-bg-light text-secondary border fw-normal" title="Campo com busca automática: digite ao menos 3 letras">🔍 busca automática</span></label>
     <input type="text" class="form-control" data-autocomplete-input placeholder="Digite ao menos 3 letras..." autocomplete="off" />
     <div class="list-group position-absolute w-100 shadow-sm d-none" style="z-index: 1000;" data-autocomplete-lista></div>
     <div class="mt-2" data-autocomplete-tags></div>
@@ -62,7 +62,7 @@
                     <input type="text" class="form-control" placeholder="Região" data-campo="Regiao" name="DatasLancamento[@i].Regiao" value="@Model.DatasLancamento[i].Regiao" />
                 </div>
                 <div class="col-5">
-                    <input type="text" class="form-control" placeholder="Data" data-campo="Data" name="DatasLancamento[@i].Data" value="@Model.DatasLancamento[i].Data" />
+                    <input type="date" class="form-control" data-campo="Data" name="DatasLancamento[@i].Data" value="@Model.DatasLancamento[i].Data" />
                 </div>
                 <div class="col-2">
                     <button type="button" class="btn btn-outline-danger" data-datas-remover>Remover</button>

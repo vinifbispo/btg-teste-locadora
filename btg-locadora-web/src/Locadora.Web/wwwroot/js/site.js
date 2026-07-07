@@ -147,11 +147,11 @@
         });
     }
 
-    function criarCampo(placeholder, campo, valor) {
+    function criarCampo(tipo, placeholder, campo, valor) {
         var input = document.createElement('input');
-        input.type = 'text';
+        input.type = tipo;
         input.className = 'form-control';
-        input.placeholder = placeholder;
+        if (placeholder) input.placeholder = placeholder;
         input.setAttribute('data-campo', campo);
         input.value = valor || '';
         return input;
@@ -163,11 +163,11 @@
 
         var colRegiao = document.createElement('div');
         colRegiao.className = 'col-5';
-        colRegiao.appendChild(criarCampo('Região', 'Regiao', regiao));
+        colRegiao.appendChild(criarCampo('text', 'Região', 'Regiao', regiao));
 
         var colData = document.createElement('div');
         colData.className = 'col-5';
-        colData.appendChild(criarCampo('Data', 'Data', data));
+        colData.appendChild(criarCampo('date', null, 'Data', data));
 
         var colRemover = document.createElement('div');
         colRemover.className = 'col-2';
@@ -193,4 +193,71 @@
         anexarRemocao(linha);
         reindexar();
     });
+})();
+
+// Autocomplete de seleção única (ex.: Jogo em Empréstimos), busca por texto com min. de letras configurável.
+(function () {
+    function inicializar(container) {
+        var input = container.querySelector('[data-autocomplete-input]');
+        var lista = container.querySelector('[data-autocomplete-lista]');
+        var hidden = container.querySelector('[data-autocomplete-hidden]');
+        var url = container.getAttribute('data-autocomplete-url');
+        var minLetras = parseInt(container.getAttribute('data-autocomplete-min') || '3', 10);
+        var timer = null;
+
+        function limparLista() {
+            lista.innerHTML = '';
+            lista.classList.add('d-none');
+        }
+
+        function selecionar(item) {
+            hidden.value = item.id;
+            input.value = item.nome;
+            limparLista();
+        }
+
+        input.addEventListener('input', function () {
+            hidden.value = '';
+            var texto = input.value.trim();
+            clearTimeout(timer);
+
+            if (texto.length < minLetras) {
+                limparLista();
+                return;
+            }
+
+            timer = setTimeout(function () {
+                fetch(url + '?texto=' + encodeURIComponent(texto), { headers: { Accept: 'application/json' } })
+                    .then(function (resp) { return resp.ok ? resp.json() : []; })
+                    .then(function (itens) {
+                        lista.innerHTML = '';
+
+                        if (!itens || itens.length === 0) {
+                            limparLista();
+                            return;
+                        }
+
+                        itens.forEach(function (item) {
+                            var opcao = document.createElement('button');
+                            opcao.type = 'button';
+                            opcao.className = 'list-group-item list-group-item-action';
+                            opcao.textContent = item.nome;
+                            opcao.addEventListener('click', function () { selecionar(item); });
+                            lista.appendChild(opcao);
+                        });
+
+                        lista.classList.remove('d-none');
+                    })
+                    .catch(function () { limparLista(); });
+            }, 250);
+        });
+
+        document.addEventListener('click', function (evento) {
+            if (!container.contains(evento.target)) {
+                limparLista();
+            }
+        });
+    }
+
+    document.querySelectorAll('[data-autocomplete-single]').forEach(inicializar);
 })();

@@ -15,10 +15,10 @@ public class JogoService : IJogoService
         _logger = logger;
     }
 
-    public Task<IEnumerable<Jogo>> ListarAsync(string? busca = null, CancellationToken ct = default)
+    public Task<PagedResult<Jogo>> ListarAsync(string? busca = null, int page = 1, int pageSize = 10, CancellationToken ct = default)
     {
-        _logger.LogDebug("Listando jogos. Busca={Busca}", busca);
-        return _api.ListarAsync(busca, ct);
+        _logger.LogDebug("Listando jogos. Busca={Busca} Page={Page}", busca, page);
+        return _api.ListarAsync(busca, page, pageSize, ct);
     }
 
     public Task<Jogo?> ObterPorIdAsync(int id, CancellationToken ct = default)

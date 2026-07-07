@@ -15,6 +15,5 @@ public class EmprestimoFormViewModel
 
     public string ChaveIdempotencia { get; set; } = Guid.NewGuid().ToString();
 
-    public IEnumerable<SelectListItem> Jogos { get; set; } = new List<SelectListItem>();
     public IEnumerable<SelectListItem> Amigos { get; set; } = new List<SelectListItem>();
 }

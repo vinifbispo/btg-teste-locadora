@@ -1,0 +1,48 @@
+@model PaginacaoViewModel
+@if (Model.TotalPages > 1)
+{
+    var delta = 2;
+    var inicio = Math.Max(1, Model.Page - delta);
+    var fim = Math.Min(Model.TotalPages, Model.Page + delta);
+
+    var paginas = new List<int?>();
+    if (inicio > 1)
+    {
+        paginas.Add(1);
+        if (inicio > 2) paginas.Add(null);
+    }
+    for (var i = inicio; i <= fim; i++) paginas.Add(i);
+    if (fim < Model.TotalPages)
+    {
+        if (fim < Model.TotalPages - 1) paginas.Add(null);
+        paginas.Add(Model.TotalPages);
+    }
+
+    var anteriorValues = new Dictionary<string, string?>(Model.RouteValues) { ["page"] = (Model.Page - 1).ToString() };
+    var proximaValues = new Dictionary<string, string?>(Model.RouteValues) { ["page"] = (Model.Page + 1).ToString() };
+
+    <nav aria-label="Paginação">
+        <ul class="pagination">
+            <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+                <a class="page-link" asp-action="@Model.Action" asp-all-route-data="anteriorValues">Anterior</a>
+            </li>
+            @foreach (var p in paginas)
+            {
+                if (p is null)
+                {
+                    <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                }
+                else
+                {
+                    var pageValues = new Dictionary<string, string?>(Model.RouteValues) { ["page"] = p.Value.ToString() };
+                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                        <a class="page-link" asp-action="@Model.Action" asp-all-route-data="pageValues">@p</a>
+                    </li>
+                }
+            }
+            <li class="page-item @(Model.Page >= Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" asp-action="@Model.Action" asp-all-route-data="proximaValues">Próxima</a>
+            </li>
+        </ul>
+    </nav>
+}

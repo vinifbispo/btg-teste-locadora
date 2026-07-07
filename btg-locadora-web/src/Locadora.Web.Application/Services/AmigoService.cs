@@ -15,10 +15,10 @@ public class AmigoService : IAmigoService
         _logger = logger;
     }
 
-    public Task<IEnumerable<Amigo>> ListarAsync(string? busca = null, CancellationToken ct = default)
+    public Task<PagedResult<Amigo>> ListarAsync(string? busca = null, int page = 1, int pageSize = 10, CancellationToken ct = default)
     {
-        _logger.LogDebug("Listando amigos. Busca={Busca}", busca);
-        return _api.ListarAsync(busca, ct);
+        _logger.LogDebug("Listando amigos. Busca={Busca} Page={Page}", busca, page);
+        return _api.ListarAsync(busca, page, pageSize, ct);
     }
 
     public Task<Amigo?> ObterPorIdAsync(int id, CancellationToken ct = default)

@@ -9,6 +9,8 @@ namespace Locadora.Web.Controllers;
 
 public class EmprestimosController : Controller
 {
+    private const int TamanhoMinimoBusca = 3;
+
     private readonly IEmprestimoService _emprestimos;
     private readonly IJogoService _jogos;
     private readonly IAmigoService _amigos;
@@ -26,17 +28,28 @@ public class EmprestimosController : Controller
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(int? jogoId, int? amigoId, bool? apenasAtivos)
+    public async Task<IActionResult> Index(int? jogoId, int? amigoId, bool? apenasAtivos, int page = 1)
     {
-        var emprestimos = await _emprestimos.ListarAsync(jogoId, amigoId, apenasAtivos);
+        var resultado = await _emprestimos.ListarAsync(jogoId, amigoId, apenasAtivos, page);
+
+        string? jogoNome = null;
+        if (jogoId is > 0)
+        {
+            var jogo = await _jogos.ObterPorIdAsync(jogoId.Value);
+            jogoNome = jogo?.Nome;
+        }
 
         var model = new EmprestimoFiltroViewModel
         {
             JogoId = jogoId,
+            JogoNome = jogoNome,
             AmigoId = amigoId,
             ApenasAtivos = apenasAtivos,
-            Emprestimos = emprestimos,
-            Jogos = await ObterOpcoesJogosAsync(),
+            Emprestimos = resultado.Items,
+            Page = resultado.Page,
+            PageSize = resultado.PageSize,
+            TotalCount = resultado.TotalCount,
+            TotalPages = resultado.TotalPages,
             Amigos = await ObterOpcoesAmigosAsync()
         };
 
@@ -56,7 +69,6 @@ public class EmprestimosController : Controller
     {
         var model = new EmprestimoFormViewModel
         {
-            Jogos = await ObterOpcoesJogosAsync(),
             Amigos = await ObterOpcoesAmigosAsync()
         };
 
@@ -69,7 +81,6 @@ public class EmprestimosController : Controller
     {
         if (!ModelState.IsValid)
         {
-            model.Jogos = await ObterOpcoesJogosAsync();
             model.Amigos = await ObterOpcoesAmigosAsync();
             return View(model);
         }
@@ -85,7 +96,6 @@ public class EmprestimosController : Controller
         {
             _logger.LogError(ex, "Falha ao criar empréstimo.");
             ModelState.AddModelError(string.Empty, ex.Message);
-            model.Jogos = await ObterOpcoesJogosAsync();
             model.Amigos = await ObterOpcoesAmigosAsync();
             return View(model);
         }
@@ -112,18 +122,28 @@ public class EmprestimosController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task<IEnumerable<SelectListItem>> ObterOpcoesJogosAsync()
+    [HttpGet]
+    public async Task<IActionResult> BuscarJogos(string texto)
     {
-        var jogos = await _jogos.ListarAsync();
-        return jogos
-            .OrderBy(j => j.Nome)
-            .Select(j => new SelectListItem(j.Nome, j.Id.ToString()));
+        if (string.IsNullOrWhiteSpace(texto) || texto.Trim().Length < TamanhoMinimoBusca)
+            return Json(Array.Empty<object>());
+
+        try
+        {
+            var resultado = await _jogos.ListarAsync(texto.Trim(), page: 1, pageSize: 20);
+            return Json(resultado.Items.Select(j => new { id = j.Id, nome = j.Nome }));
+        }
+        catch (ApiException ex)
+        {
+            _logger.LogError(ex, "Falha ao buscar jogos para seleção de empréstimo.");
+            return Json(Array.Empty<object>());
+        }
     }
 
     private async Task<IEnumerable<SelectListItem>> ObterOpcoesAmigosAsync()
     {
-        var amigos = await _amigos.ListarAsync();
-        return amigos
+        var resultado = await _amigos.ListarAsync(busca: null, page: 1, pageSize: 100);
+        return resultado.Items
             .OrderBy(a => a.Nome)
             .Select(a => new SelectListItem($"{a.Nome} {a.Sobrenome}", a.Id.ToString()));
     }

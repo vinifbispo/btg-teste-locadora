@@ -9,11 +9,13 @@
 </div>
 
 <form method="get" class="row g-2 mb-3 align-items-end">
-    <div class="col-auto">
-        <label class="form-label">Jogo</label>
-        <select asp-for="JogoId" asp-items="Model.Jogos" class="form-select">
-            <option value="">Todos</option>
-        </select>
+    <div class="col-auto position-relative" style="min-width: 220px;" data-autocomplete-single
+         data-autocomplete-url="@Url.Action("BuscarJogos")"
+         data-autocomplete-min="3">
+        <label class="form-label">Jogo <span class="badge text-bg-light text-secondary border fw-normal" title="Campo com busca automática: digite ao menos 3 letras">🔍 busca automática</span></label>
+        <input type="text" class="form-control" data-autocomplete-input placeholder="Buscar jogo..." autocomplete="off" value="@Model.JogoNome" />
+        <div class="list-group position-absolute w-100 shadow-sm d-none" style="z-index: 1000;" data-autocomplete-lista></div>
+        <input type="hidden" data-autocomplete-hidden name="jogoId" value="@Model.JogoId" />
     </div>
     <div class="col-auto">
         <label class="form-label">Amigo</label>
@@ -78,4 +80,21 @@ else
             }
         </tbody>
     </table>
+
+    var paginacao = new PaginacaoViewModel
+    {
+        Page = Model.Page,
+        TotalPages = Model.TotalPages,
+        Action = "Index",
+        RouteValues = new Dictionary<string, string?>
+        {
+            ["jogoId"] = Model.JogoId?.ToString(),
+            ["amigoId"] = Model.AmigoId?.ToString(),
+            ["apenasAtivos"] = Model.ApenasAtivos == true ? "true" : null
+        }
+    };
+    <div class="d-flex justify-content-between align-items-center">
+        <span class="text-muted small">@Model.TotalCount empréstimo(s) encontrado(s)</span>
+        <partial name="_Paginacao" model="paginacao" />
+    </div>
 }

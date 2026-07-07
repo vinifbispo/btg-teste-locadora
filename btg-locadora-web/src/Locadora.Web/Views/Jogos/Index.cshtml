@@ -1,4 +1,4 @@
-@model IEnumerable<Jogo>
+@model ListaPaginadaViewModel<Jogo>
 @{
     ViewData["Title"] = "Jogos";
 }
@@ -10,16 +10,16 @@
 
 <form method="get" class="row g-2 mb-3">
     <div class="col-auto">
-        <input type="text" name="busca" value="@ViewData["Busca"]" class="form-control" placeholder="Buscar por nome..." />
+        <input type="text" name="busca" value="@Model.Busca" class="form-control" placeholder="Buscar por nome..." />
     </div>
     <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">Buscar</button>
     </div>
 </form>
 
-@if (!Model.Any())
+@if (!Model.Items.Any())
 {
-    <p class="text-muted">Nenhum jogo cadastrado.</p>
+    <p class="text-muted">Nenhum jogo encontrado.</p>
 }
 else
 {
@@ -34,7 +34,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var jogo in Model)
+            @foreach (var jogo in Model.Items)
             {
                 <tr>
                     <td>@jogo.Nome</td>
@@ -50,4 +50,16 @@ else
             }
         </tbody>
     </table>
+
+    var paginacao = new PaginacaoViewModel
+    {
+        Page = Model.Page,
+        TotalPages = Model.TotalPages,
+        Action = "Index",
+        RouteValues = new Dictionary<string, string?> { ["busca"] = Model.Busca }
+    };
+    <div class="d-flex justify-content-between align-items-center">
+        <span class="text-muted small">@Model.TotalCount jogo(s) encontrado(s)</span>
+        <partial name="_Paginacao" model="paginacao" />
+    </div>
 }
