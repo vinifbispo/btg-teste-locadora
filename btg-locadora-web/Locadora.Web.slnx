@@ -5,4 +5,8 @@
     <Project Path="src/Locadora.Web.Infrastructure/Locadora.Web.Infrastructure.csproj" />
     <Project Path="src/Locadora.Web/Locadora.Web.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Locadora.Web.Application.UnitTest/Locadora.Web.Application.UnitTest.csproj" />
+    <Project Path="tests/Locadora.Web.Infrastructure.UnitTest/Locadora.Web.Infrastructure.UnitTest.csproj" />
+  </Folder>
 </Solution>
