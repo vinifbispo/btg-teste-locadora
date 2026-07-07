@@ -1,6 +1,6 @@
 using Locadora.Application.Dtos;
 using Locadora.Application.Interfaces;
-using Locadora.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Locadora.Api.Controllers;
@@ -8,6 +8,7 @@ namespace Locadora.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
+[Authorize]
 public class JogosController : ControllerBase
 {
     private readonly IJogoService _jogos;
@@ -19,11 +20,9 @@ public class JogosController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<JogoDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<JogoDto>>> GetJogos(
-        [FromQuery] ConsoleTipo? console,
-        [FromQuery] string? busca)
+    public async Task<ActionResult<IEnumerable<JogoDto>>> GetJogos([FromQuery] string? busca)
     {
-        var jogos = await _jogos.ListarAsync(console, busca);
+        var jogos = await _jogos.ListarAsync(busca);
         return Ok(jogos);
     }
 

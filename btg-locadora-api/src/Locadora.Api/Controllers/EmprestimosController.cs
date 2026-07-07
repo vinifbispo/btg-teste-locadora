@@ -1,6 +1,7 @@
 using Locadora.Application.Dtos;
 using Locadora.Application.Interfaces;
 using Locadora.Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Locadora.Api.Controllers;
@@ -8,6 +9,7 @@ namespace Locadora.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
+[Authorize]
 public class EmprestimosController : ControllerBase
 {
     private readonly IEmprestimoService _emprestimos;

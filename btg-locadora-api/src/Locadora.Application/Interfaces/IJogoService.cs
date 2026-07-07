@@ -1,11 +1,10 @@
 using Locadora.Application.Dtos;
-using Locadora.Domain.Enums;
 
 namespace Locadora.Application.Interfaces;
 
 public interface IJogoService
 {
-    Task<IEnumerable<JogoDto>> ListarAsync(ConsoleTipo? console, string? busca);
+    Task<IEnumerable<JogoDto>> ListarAsync(string? busca);
 
     Task<JogoDto?> ObterPorIdAsync(int id);
 
@@ -14,4 +13,6 @@ public interface IJogoService
     Task<bool> AtualizarAsync(int id, JogoInputDto input);
 
     Task<bool> RemoverAsync(int id);
+
+    Task ImportarDoJogoExternoAsync(CancellationToken ct = default);
 }

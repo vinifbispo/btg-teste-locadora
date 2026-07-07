@@ -17,11 +17,17 @@ public class JogoRepository : IJogoRepository
         => await Task.FromResult<IQueryable<Jogo>>(_context.Jogos.AsNoTracking());
 
     public async Task<Jogo?> ObterPorIdAsync(int id)
-        => await _context.Jogos.FindAsync(id);
+        => await _context.Jogos.FirstOrDefaultAsync(j => j.Id == id);
 
     public async Task AdicionarAsync(Jogo jogo)
     {
         _context.Jogos.Add(jogo);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task AdicionarVariosAsync(IEnumerable<Jogo> jogos)
+    {
+        _context.Jogos.AddRange(jogos);
         await _context.SaveChangesAsync();
     }
 

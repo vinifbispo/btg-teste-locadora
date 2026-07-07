@@ -11,10 +11,13 @@ public class JogoInputDtoValidator : AbstractValidator<JogoInputDto>
             .NotEmpty()
             .MaximumLength(150);
 
-        RuleFor(p => p.ImagemCapa)
-            .MaximumLength(500);
+        RuleFor(p => p.Generos)
+            .NotEmpty();
 
-        RuleFor(p => p.Console)
-            .IsInEnum();
+        RuleFor(p => p.Desenvolvedores)
+            .NotEmpty();
+
+        RuleFor(p => p.Publicadoras)
+            .NotEmpty();
     }
 }

@@ -14,12 +14,23 @@ public class JogoConfiguration : IEntityTypeConfiguration<Jogo>
             .IsRequired()
             .HasMaxLength(150);
 
-        builder.Property(j => j.ImagemCapa)
+        builder.Property(j => j.UrlImagemCapa)
             .HasMaxLength(500);
 
-        builder.Property(j => j.Console)
-            .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(10);
+        builder.OwnsMany(j => j.DatasLancamento, datas =>
+        {
+            datas.ToTable("JogoDatasLancamento");
+            datas.WithOwner().HasForeignKey("JogoId");
+            datas.Property<int>("Id");
+            datas.HasKey("Id");
+
+            datas.Property(d => d.Regiao)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            datas.Property(d => d.Data)
+                .IsRequired()
+                .HasMaxLength(50);
+        });
     }
 }

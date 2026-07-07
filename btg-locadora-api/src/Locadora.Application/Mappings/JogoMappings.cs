@@ -9,9 +9,12 @@ internal static class JogoMappings
     {
         Id = jogo.Id,
         Nome = jogo.Nome,
-        ImagemCapa = jogo.ImagemCapa,
-        Console = jogo.Console,
-        DataCadastro = jogo.DataCadastro,
-        DataAtualizacao = jogo.DataAtualizacao
+        UrlImagemCapa = jogo.UrlImagemCapa,
+        Generos = jogo.Generos,
+        Desenvolvedores = jogo.Desenvolvedores,
+        Publicadoras = jogo.Publicadoras,
+        DatasLancamento = jogo.DatasLancamento
+            .Select(d => new DataLancamentoDto { Regiao = d.Regiao, Data = d.Data })
+            .ToList()
     };
 }

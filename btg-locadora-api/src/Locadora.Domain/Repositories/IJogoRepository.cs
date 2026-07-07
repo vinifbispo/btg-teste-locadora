@@ -10,6 +10,8 @@ public interface IJogoRepository
 
     Task AdicionarAsync(Jogo jogo);
 
+    Task AdicionarVariosAsync(IEnumerable<Jogo> jogos);
+
     Task AtualizarAsync(Jogo jogo);
 
     Task RemoverAsync(Jogo jogo);

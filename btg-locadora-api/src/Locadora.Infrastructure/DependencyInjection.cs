@@ -1,7 +1,9 @@
 using Locadora.Domain.Caching;
 using Locadora.Domain.Idempotencia;
+using Locadora.Domain.Integracoes;
 using Locadora.Domain.Repositories;
 using Locadora.Infrastructure.Caching;
+using Locadora.Infrastructure.Http;
 using Locadora.Infrastructure.Idempotencia;
 using Locadora.Infrastructure.Persistence;
 using Locadora.Infrastructure.Persistence.Repositories;
@@ -44,6 +46,15 @@ public static class DependencyInjection
         services.AddSingleton<IJogoCache, JogoRedisCache>();
         services.AddSingleton<IAmigoCache, AmigoRedisCache>();
         services.AddSingleton<IEmprestimoCache, EmprestimoRedisCache>();
+
+        var jogoExternoApiBaseUrl = configuration["JogoExternoApi:BaseUrl"]
+            ?? throw new InvalidOperationException("Configuração 'JogoExternoApi:BaseUrl' não encontrada.");
+
+        services.AddHttpClient<IJogoExternoApiClient, JogoExternoApiClient>(client =>
+        {
+            client.BaseAddress = new Uri(jogoExternoApiBaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
 
         return services;
     }

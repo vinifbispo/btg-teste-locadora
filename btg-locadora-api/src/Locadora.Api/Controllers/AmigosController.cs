@@ -1,5 +1,6 @@
 using Locadora.Application.Dtos;
 using Locadora.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Locadora.Api.Controllers;
@@ -7,6 +8,7 @@ namespace Locadora.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
+[Authorize]
 public class AmigosController : ControllerBase
 {
     private readonly IAmigoService _amigos;
