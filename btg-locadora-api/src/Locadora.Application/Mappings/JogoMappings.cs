@@ -9,7 +9,6 @@ internal static class JogoMappings
     {
         Id = jogo.Id,
         Nome = jogo.Nome,
-        UrlImagemCapa = jogo.UrlImagemCapa,
         Generos = jogo.Generos,
         Desenvolvedores = jogo.Desenvolvedores,
         Publicadoras = jogo.Publicadoras,

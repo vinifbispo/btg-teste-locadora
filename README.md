@@ -42,7 +42,6 @@ btg-locadora-api/
 - **.NET 10** / ASP.NET Core
 - **Entity Framework Core** + **SQL Server**
 - **Redis** (cache)
-- **Blob Storage** (armazenamento de arquivos/imagens)
 - **FluentValidation** (validação na entrada da API)
 - **Swagger** (documentação)
 - **xUnit**, **Moq** e **FluentAssertions** (testes)
@@ -69,5 +68,4 @@ docker compose down
 | **API REST**            | http://localhost:8080                    | `8080 → 8080`               | Swagger em `/swagger` |
 | **SQL Server**          | `localhost,1433`                         | `1433 → 1433`               | User: `sa` / Senha: `Str0ngP@ssw0rd!` / DB: `DB_LOCADORA` |
 | **Redis**               | `localhost:6379`                         | `6379 → 6379`               | Cache distribuído |
-| **Azurite (Blob)**      | http://127.0.0.1:10000/devstoreaccount1  | `10000 → 10000`             | Emulador de Azure Blob Storage |
 

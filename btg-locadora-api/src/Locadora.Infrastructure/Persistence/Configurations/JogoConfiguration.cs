@@ -14,9 +14,6 @@ public class JogoConfiguration : IEntityTypeConfiguration<Jogo>
             .IsRequired()
             .HasMaxLength(150);
 
-        builder.Property(j => j.UrlImagemCapa)
-            .HasMaxLength(500);
-
         builder.OwnsMany(j => j.DatasLancamento, datas =>
         {
             datas.ToTable("JogoDatasLancamento");

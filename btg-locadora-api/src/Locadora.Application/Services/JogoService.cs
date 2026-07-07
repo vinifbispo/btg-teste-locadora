@@ -79,7 +79,6 @@ public class JogoService : IJogoService
         var jogo = new Jogo
         {
             Nome = input.Nome,
-            UrlImagemCapa = input.UrlImagemCapa,
             Generos = input.Generos,
             Desenvolvedores = input.Desenvolvedores,
             Publicadoras = input.Publicadoras,
@@ -108,7 +107,6 @@ public class JogoService : IJogoService
         }
 
         jogo.Nome = input.Nome;
-        jogo.UrlImagemCapa = input.UrlImagemCapa;
         jogo.Generos = input.Generos;
         jogo.Desenvolvedores = input.Desenvolvedores;
         jogo.Publicadoras = input.Publicadoras;
