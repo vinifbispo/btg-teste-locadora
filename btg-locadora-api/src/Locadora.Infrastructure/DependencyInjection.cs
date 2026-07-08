@@ -18,7 +18,8 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<LocadoraDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("SqlServerDB")));
+            options.UseSqlServer(configuration.GetConnectionString("SqlServerDB"),
+                sql => sql.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null)));
 
         services.AddStackExchangeRedisCache(options =>
             options.Configuration = configuration.GetConnectionString("Redis"));
