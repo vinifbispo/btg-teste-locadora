@@ -9,11 +9,11 @@ namespace Locadora.Application.Queries.Amigos.ObterAmigoPorId;
 
 public class ObterAmigoPorIdQueryHandler : IRequestHandler<ObterAmigoPorIdQuery, AmigoDto?>
 {
-    private readonly IAmigoRepository _amigos;
+    private readonly IAmigoQueryRepository _amigos;
     private readonly IAmigoCache _cache;
     private readonly ILogger<ObterAmigoPorIdQueryHandler> _logger;
 
-    public ObterAmigoPorIdQueryHandler(IAmigoRepository amigos, IAmigoCache cache, ILogger<ObterAmigoPorIdQueryHandler> logger)
+    public ObterAmigoPorIdQueryHandler(IAmigoQueryRepository amigos, IAmigoCache cache, ILogger<ObterAmigoPorIdQueryHandler> logger)
     {
         _amigos = amigos;
         _cache = cache;

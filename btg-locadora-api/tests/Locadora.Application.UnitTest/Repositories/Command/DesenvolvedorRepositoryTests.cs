@@ -1,8 +1,8 @@
 using Locadora.Application.UnitTest.TestHelpers;
 using Locadora.Domain.Entities;
-using Locadora.Infrastructure.Persistence.Repositories;
+using Locadora.Infrastructure.Persistence.Repositories.Command;
 
-namespace Locadora.Application.UnitTest.Repositories;
+namespace Locadora.Application.UnitTest.Repositories.Command;
 
 public class DesenvolvedorRepositoryTests
 {
@@ -53,24 +53,5 @@ public class DesenvolvedorRepositoryTests
 
         resultado.Should().HaveCount(2);
         dados.Should().Contain(d => d.Nome == "BTG Empresas");
-    }
-
-    [Fact]
-    public async Task BuscarPorNomeAsync_DeveRetornarApenasDesenvolvedoresQueContenhamOTermoOrdenadosPorNome()
-    {
-        var dados = new List<Desenvolvedor>
-        {
-            new() { Id = 1, Nome = "CD Projekt Red" },
-            new() { Id = 2, Nome = "BTG Pactual" },
-            new() { Id = 3, Nome = "Naughty Dog" }
-        };
-
-        var mockContext = TestDbContextFactory.Create();
-        mockContext.Object.Desenvolvedores = MockDbSetFactory.Create(dados).Object;
-        var repositorio = new DesenvolvedorRepository(mockContext.Object);
-
-        var resultado = await repositorio.BuscarPorNomeAsync("Pactual");
-
-        resultado.Should().ContainSingle().Which.Nome.Should().Be("BTG Pactual");
     }
 }

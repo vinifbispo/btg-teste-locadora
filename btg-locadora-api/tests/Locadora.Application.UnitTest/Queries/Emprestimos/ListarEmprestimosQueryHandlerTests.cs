@@ -8,7 +8,7 @@ namespace Locadora.Application.UnitTest.Queries.Emprestimos;
 
 public class ListarEmprestimosQueryHandlerTests
 {
-    private readonly Mock<IEmprestimoRepository> _emprestimos = new();
+    private readonly Mock<IEmprestimoQueryRepository> _emprestimos = new();
 
     private ListarEmprestimosQueryHandler CriarHandler() => new(_emprestimos.Object, new Mock<ILogger<ListarEmprestimosQueryHandler>>().Object);
 

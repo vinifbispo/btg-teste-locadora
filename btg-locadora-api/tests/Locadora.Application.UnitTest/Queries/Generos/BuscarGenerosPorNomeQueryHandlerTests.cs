@@ -6,7 +6,7 @@ namespace Locadora.Application.UnitTest.Queries.Generos;
 
 public class BuscarGenerosPorNomeQueryHandlerTests
 {
-    private readonly Mock<IGeneroRepository> _generos = new();
+    private readonly Mock<IGeneroQueryRepository> _generos = new();
 
     private BuscarGenerosPorNomeQueryHandler CriarHandler() => new(_generos.Object);
 

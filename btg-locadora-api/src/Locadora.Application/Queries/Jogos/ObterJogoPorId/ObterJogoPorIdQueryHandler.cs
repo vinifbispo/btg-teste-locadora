@@ -9,11 +9,11 @@ namespace Locadora.Application.Queries.Jogos.ObterJogoPorId;
 
 public class ObterJogoPorIdQueryHandler : IRequestHandler<ObterJogoPorIdQuery, JogoDto?>
 {
-    private readonly IJogoRepository _jogos;
+    private readonly IJogoQueryRepository _jogos;
     private readonly IJogoCache _cache;
     private readonly ILogger<ObterJogoPorIdQueryHandler> _logger;
 
-    public ObterJogoPorIdQueryHandler(IJogoRepository jogos, IJogoCache cache, ILogger<ObterJogoPorIdQueryHandler> logger)
+    public ObterJogoPorIdQueryHandler(IJogoQueryRepository jogos, IJogoCache cache, ILogger<ObterJogoPorIdQueryHandler> logger)
     {
         _jogos = jogos;
         _cache = cache;

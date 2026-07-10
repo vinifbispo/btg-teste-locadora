@@ -1,8 +1,8 @@
 using Locadora.Application.UnitTest.TestHelpers;
 using Locadora.Domain.Entities;
-using Locadora.Infrastructure.Persistence.Repositories;
+using Locadora.Infrastructure.Persistence.Repositories.Command;
 
-namespace Locadora.Application.UnitTest.Repositories;
+namespace Locadora.Application.UnitTest.Repositories.Command;
 
 public class PublicadoraRepositoryTests
 {
@@ -53,24 +53,5 @@ public class PublicadoraRepositoryTests
 
         resultado.Should().HaveCount(2);
         dados.Should().Contain(p => p.Nome == "Ubisoft");
-    }
-
-    [Fact]
-    public async Task BuscarPorNomeAsync_DeveRetornarApenasPublicadorasQueContenhamOTermoOrdenadasPorNome()
-    {
-        var dados = new List<Publicadora>
-        {
-            new() { Id = 1, Nome = "Nintendo" },
-            new() { Id = 2, Nome = "Microsoft" },
-            new() { Id = 3, Nome = "Sony" }
-        };
-
-        var mockContext = TestDbContextFactory.Create();
-        mockContext.Object.Publicadoras = MockDbSetFactory.Create(dados).Object;
-        var repositorio = new PublicadoraRepository(mockContext.Object);
-
-        var resultado = await repositorio.BuscarPorNomeAsync("cro");
-
-        resultado.Should().ContainSingle().Which.Nome.Should().Be("Microsoft");
     }
 }

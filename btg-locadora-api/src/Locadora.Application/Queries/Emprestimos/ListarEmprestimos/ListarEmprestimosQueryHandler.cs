@@ -11,10 +11,10 @@ public class ListarEmprestimosQueryHandler : IRequestHandler<ListarEmprestimosQu
 {
     private const int TamanhoPaginaMaximo = 100;
 
-    private readonly IEmprestimoRepository _emprestimos;
+    private readonly IEmprestimoQueryRepository _emprestimos;
     private readonly ILogger<ListarEmprestimosQueryHandler> _logger;
 
-    public ListarEmprestimosQueryHandler(IEmprestimoRepository emprestimos, ILogger<ListarEmprestimosQueryHandler> logger)
+    public ListarEmprestimosQueryHandler(IEmprestimoQueryRepository emprestimos, ILogger<ListarEmprestimosQueryHandler> logger)
     {
         _emprestimos = emprestimos;
         _logger = logger;

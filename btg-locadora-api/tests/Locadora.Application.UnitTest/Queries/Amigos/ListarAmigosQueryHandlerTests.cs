@@ -8,7 +8,7 @@ namespace Locadora.Application.UnitTest.Queries.Amigos;
 
 public class ListarAmigosQueryHandlerTests
 {
-    private readonly Mock<IAmigoRepository> _amigos = new();
+    private readonly Mock<IAmigoQueryRepository> _amigos = new();
 
     private ListarAmigosQueryHandler CriarHandler() => new(_amigos.Object, new Mock<ILogger<ListarAmigosQueryHandler>>().Object);
 

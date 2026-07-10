@@ -6,7 +6,7 @@ namespace Locadora.Application.UnitTest.Queries.Desenvolvedores;
 
 public class BuscarDesenvolvedoresPorNomeQueryHandlerTests
 {
-    private readonly Mock<IDesenvolvedorRepository> _desenvolvedores = new();
+    private readonly Mock<IDesenvolvedorQueryRepository> _desenvolvedores = new();
 
     private BuscarDesenvolvedoresPorNomeQueryHandler CriarHandler() => new(_desenvolvedores.Object);
 

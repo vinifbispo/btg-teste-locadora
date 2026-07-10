@@ -7,9 +7,9 @@ namespace Locadora.Application.Queries.Generos.BuscarGenerosPorNome;
 
 public class BuscarGenerosPorNomeQueryHandler : IRequestHandler<BuscarGenerosPorNomeQuery, IEnumerable<GeneroDto>>
 {
-    private readonly IGeneroRepository _generos;
+    private readonly IGeneroQueryRepository _generos;
 
-    public BuscarGenerosPorNomeQueryHandler(IGeneroRepository generos)
+    public BuscarGenerosPorNomeQueryHandler(IGeneroQueryRepository generos)
     {
         _generos = generos;
     }

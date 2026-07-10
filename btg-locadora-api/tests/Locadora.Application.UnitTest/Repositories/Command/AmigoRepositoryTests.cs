@@ -1,8 +1,8 @@
 using Locadora.Application.UnitTest.TestHelpers;
 using Locadora.Domain.Entities;
-using Locadora.Infrastructure.Persistence.Repositories;
+using Locadora.Infrastructure.Persistence.Repositories.Command;
 
-namespace Locadora.Application.UnitTest.Repositories;
+namespace Locadora.Application.UnitTest.Repositories.Command;
 
 public class AmigoRepositoryTests
 {

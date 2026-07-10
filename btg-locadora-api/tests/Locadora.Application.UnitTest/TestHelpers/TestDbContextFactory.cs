@@ -14,4 +14,14 @@ internal static class TestDbContextFactory
 
         return mockContext;
     }
+
+    public static Mock<LocadoraReadDbContext> CreateRead()
+    {
+        var options = new DbContextOptions<LocadoraReadDbContext>();
+        var mockContext = new Mock<LocadoraReadDbContext>(options);
+
+        mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(0);
+
+        return mockContext;
+    }
 }

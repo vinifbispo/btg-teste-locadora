@@ -7,9 +7,9 @@ namespace Locadora.Application.Queries.Publicadoras.BuscarPublicadorasPorNome;
 
 public class BuscarPublicadorasPorNomeQueryHandler : IRequestHandler<BuscarPublicadorasPorNomeQuery, IEnumerable<PublicadoraDto>>
 {
-    private readonly IPublicadoraRepository _publicadoras;
+    private readonly IPublicadoraQueryRepository _publicadoras;
 
-    public BuscarPublicadorasPorNomeQueryHandler(IPublicadoraRepository publicadoras)
+    public BuscarPublicadorasPorNomeQueryHandler(IPublicadoraQueryRepository publicadoras)
     {
         _publicadoras = publicadoras;
     }

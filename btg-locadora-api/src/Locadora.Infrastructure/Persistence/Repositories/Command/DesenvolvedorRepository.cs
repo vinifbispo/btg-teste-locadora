@@ -2,7 +2,7 @@ using Locadora.Domain.Entities;
 using Locadora.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Locadora.Infrastructure.Persistence.Repositories;
+namespace Locadora.Infrastructure.Persistence.Repositories.Command;
 
 public class DesenvolvedorRepository : IDesenvolvedorRepository
 {
@@ -38,11 +38,4 @@ public class DesenvolvedorRepository : IDesenvolvedorRepository
 
         return existentes.Concat(faltantes).ToList();
     }
-
-    public async Task<List<Desenvolvedor>> BuscarPorNomeAsync(string termo)
-        => await _context.Desenvolvedores
-            .Where(d => d.Nome.Contains(termo))
-            .OrderBy(d => d.Nome)
-            .Take(20)
-            .ToListAsync();
 }

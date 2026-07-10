@@ -7,9 +7,9 @@ namespace Locadora.Application.Queries.Desenvolvedores.BuscarDesenvolvedoresPorN
 
 public class BuscarDesenvolvedoresPorNomeQueryHandler : IRequestHandler<BuscarDesenvolvedoresPorNomeQuery, IEnumerable<DesenvolvedorDto>>
 {
-    private readonly IDesenvolvedorRepository _desenvolvedores;
+    private readonly IDesenvolvedorQueryRepository _desenvolvedores;
 
-    public BuscarDesenvolvedoresPorNomeQueryHandler(IDesenvolvedorRepository desenvolvedores)
+    public BuscarDesenvolvedoresPorNomeQueryHandler(IDesenvolvedorQueryRepository desenvolvedores)
     {
         _desenvolvedores = desenvolvedores;
     }

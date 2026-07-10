@@ -2,7 +2,7 @@ using Locadora.Domain.Entities;
 using Locadora.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Locadora.Infrastructure.Persistence.Repositories;
+namespace Locadora.Infrastructure.Persistence.Repositories.Command;
 
 public class AmigoRepository : IAmigoRepository
 {

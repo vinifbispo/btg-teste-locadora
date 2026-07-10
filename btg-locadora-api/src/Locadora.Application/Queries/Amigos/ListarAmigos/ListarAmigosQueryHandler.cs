@@ -11,10 +11,10 @@ public class ListarAmigosQueryHandler : IRequestHandler<ListarAmigosQuery, Paged
 {
     private const int TamanhoPaginaMaximo = 100;
 
-    private readonly IAmigoRepository _amigos;
+    private readonly IAmigoQueryRepository _amigos;
     private readonly ILogger<ListarAmigosQueryHandler> _logger;
 
-    public ListarAmigosQueryHandler(IAmigoRepository amigos, ILogger<ListarAmigosQueryHandler> logger)
+    public ListarAmigosQueryHandler(IAmigoQueryRepository amigos, ILogger<ListarAmigosQueryHandler> logger)
     {
         _amigos = amigos;
         _logger = logger;

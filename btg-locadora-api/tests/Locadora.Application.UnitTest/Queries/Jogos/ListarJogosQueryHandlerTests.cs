@@ -8,7 +8,7 @@ namespace Locadora.Application.UnitTest.Queries.Jogos;
 
 public class ListarJogosQueryHandlerTests
 {
-    private readonly Mock<IJogoRepository> _jogos = new();
+    private readonly Mock<IJogoQueryRepository> _jogos = new();
 
     private ListarJogosQueryHandler CriarHandler() => new(_jogos.Object, new Mock<ILogger<ListarJogosQueryHandler>>().Object);
 

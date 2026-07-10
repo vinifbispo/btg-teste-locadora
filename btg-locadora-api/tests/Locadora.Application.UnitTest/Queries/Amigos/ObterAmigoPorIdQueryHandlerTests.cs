@@ -8,7 +8,7 @@ namespace Locadora.Application.UnitTest.Queries.Amigos;
 
 public class ObterAmigoPorIdQueryHandlerTests
 {
-    private readonly Mock<IAmigoRepository> _amigos = new();
+    private readonly Mock<IAmigoQueryRepository> _amigos = new();
     private readonly Mock<IAmigoCache> _cache = new();
 
     private ObterAmigoPorIdQueryHandler CriarHandler() => new(_amigos.Object, _cache.Object, new Mock<ILogger<ObterAmigoPorIdQueryHandler>>().Object);

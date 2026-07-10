@@ -6,7 +6,7 @@ namespace Locadora.Application.UnitTest.Queries.Publicadoras;
 
 public class BuscarPublicadorasPorNomeQueryHandlerTests
 {
-    private readonly Mock<IPublicadoraRepository> _publicadoras = new();
+    private readonly Mock<IPublicadoraQueryRepository> _publicadoras = new();
 
     private BuscarPublicadorasPorNomeQueryHandler CriarHandler() => new(_publicadoras.Object);
 

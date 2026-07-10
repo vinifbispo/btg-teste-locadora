@@ -9,11 +9,11 @@ namespace Locadora.Application.Queries.Emprestimos.ObterEmprestimoPorId;
 
 public class ObterEmprestimoPorIdQueryHandler : IRequestHandler<ObterEmprestimoPorIdQuery, EmprestimoDto?>
 {
-    private readonly IEmprestimoRepository _emprestimos;
+    private readonly IEmprestimoQueryRepository _emprestimos;
     private readonly IEmprestimoCache _cache;
     private readonly ILogger<ObterEmprestimoPorIdQueryHandler> _logger;
 
-    public ObterEmprestimoPorIdQueryHandler(IEmprestimoRepository emprestimos, IEmprestimoCache cache, ILogger<ObterEmprestimoPorIdQueryHandler> logger)
+    public ObterEmprestimoPorIdQueryHandler(IEmprestimoQueryRepository emprestimos, IEmprestimoCache cache, ILogger<ObterEmprestimoPorIdQueryHandler> logger)
     {
         _emprestimos = emprestimos;
         _cache = cache;

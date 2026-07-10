@@ -11,10 +11,10 @@ public class ListarJogosQueryHandler : IRequestHandler<ListarJogosQuery, PagedRe
 {
     private const int TamanhoPaginaMaximo = 100;
 
-    private readonly IJogoRepository _jogos;
+    private readonly IJogoQueryRepository _jogos;
     private readonly ILogger<ListarJogosQueryHandler> _logger;
 
-    public ListarJogosQueryHandler(IJogoRepository jogos, ILogger<ListarJogosQueryHandler> logger)
+    public ListarJogosQueryHandler(IJogoQueryRepository jogos, ILogger<ListarJogosQueryHandler> logger)
     {
         _jogos = jogos;
         _logger = logger;
