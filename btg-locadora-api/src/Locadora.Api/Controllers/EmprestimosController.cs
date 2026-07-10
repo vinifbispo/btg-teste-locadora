@@ -1,6 +1,10 @@
 using Locadora.Application.Dtos;
-using Locadora.Application.Interfaces;
+using Locadora.Application.Commands.Emprestimos.DevolverEmprestimo;
+using Locadora.Application.Commands.Emprestimos.EmprestarJogo;
+using Locadora.Application.Queries.Emprestimos.ListarEmprestimos;
+using Locadora.Application.Queries.Emprestimos.ObterEmprestimoPorId;
 using Locadora.Domain.Exceptions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +16,11 @@ namespace Locadora.Api.Controllers;
 [Authorize]
 public class EmprestimosController : ControllerBase
 {
-    private readonly IEmprestimoService _emprestimos;
+    private readonly ISender _sender;
 
-    public EmprestimosController(IEmprestimoService emprestimos)
+    public EmprestimosController(ISender sender)
     {
-        _emprestimos = emprestimos;
+        _sender = sender;
     }
 
     [HttpGet]
@@ -28,7 +32,7 @@ public class EmprestimosController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
-        var emprestimos = await _emprestimos.ListarAsync(jogoId, amigoId, apenasAtivos, page, pageSize);
+        var emprestimos = await _sender.Send(new ListarEmprestimosQuery(jogoId, amigoId, apenasAtivos, page, pageSize));
         return Ok(emprestimos);
     }
 
@@ -37,7 +41,7 @@ public class EmprestimosController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<EmprestimoDto>> GetEmprestimo(int id)
     {
-        var emprestimo = await _emprestimos.ObterPorIdAsync(id);
+        var emprestimo = await _sender.Send(new ObterEmprestimoPorIdQuery(id));
         return emprestimo is null ? NotFound() : Ok(emprestimo);
     }
 
@@ -52,7 +56,7 @@ public class EmprestimosController : ControllerBase
     {
         try
         {
-            var emprestimo = await _emprestimos.EmprestarAsync(input, chaveIdempotencia);
+            var emprestimo = await _sender.Send(new EmprestarJogoCommand(input, chaveIdempotencia));
             return CreatedAtAction(nameof(GetEmprestimo), new { id = emprestimo.Id }, emprestimo);
         }
         catch (NotFoundException ex)
@@ -70,7 +74,7 @@ public class EmprestimosController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DevolverEmprestimo(int id)
     {
-        var devolvido = await _emprestimos.DevolverAsync(id);
+        var devolvido = await _sender.Send(new DevolverEmprestimoCommand(id));
         return devolvido ? NoContent() : NotFound();
     }
 }

@@ -1,6 +1,11 @@
 using Locadora.Application.Dtos;
-using Locadora.Application.Interfaces;
+using Locadora.Application.Commands.Jogos.AtualizarJogo;
+using Locadora.Application.Commands.Jogos.CriarJogo;
+using Locadora.Application.Commands.Jogos.RemoverJogo;
+using Locadora.Application.Queries.Jogos.ListarJogos;
+using Locadora.Application.Queries.Jogos.ObterJogoPorId;
 using Locadora.Domain.Exceptions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,18 +17,18 @@ namespace Locadora.Api.Controllers;
 [Authorize]
 public class JogosController : ControllerBase
 {
-    private readonly IJogoService _jogos;
+    private readonly ISender _sender;
 
-    public JogosController(IJogoService jogos)
+    public JogosController(ISender sender)
     {
-        _jogos = jogos;
+        _sender = sender;
     }
 
     [HttpGet]
     [ProducesResponseType(typeof(PagedResultDto<JogoDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResultDto<JogoDto>>> GetJogos([FromQuery] string? busca, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var jogos = await _jogos.ListarAsync(busca, page, pageSize);
+        var jogos = await _sender.Send(new ListarJogosQuery(busca, page, pageSize));
         return Ok(jogos);
     }
 
@@ -32,7 +37,7 @@ public class JogosController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<JogoDto>> GetJogo(int id)
     {
-        var jogo = await _jogos.ObterPorIdAsync(id);
+        var jogo = await _sender.Send(new ObterJogoPorIdQuery(id));
         return jogo is null ? NotFound() : Ok(jogo);
     }
 
@@ -46,7 +51,7 @@ public class JogosController : ControllerBase
     {
         try
         {
-            var jogo = await _jogos.CriarAsync(input, chaveIdempotencia);
+            var jogo = await _sender.Send(new CriarJogoCommand(input, chaveIdempotencia));
             return CreatedAtAction(nameof(GetJogo), new { id = jogo.Id }, jogo);
         }
         catch (NotFoundException ex)
@@ -63,7 +68,7 @@ public class JogosController : ControllerBase
     {
         try
         {
-            var atualizado = await _jogos.AtualizarAsync(id, input);
+            var atualizado = await _sender.Send(new AtualizarJogoCommand(id, input));
             return atualizado ? NoContent() : NotFound();
         }
         catch (NotFoundException ex)
@@ -80,7 +85,7 @@ public class JogosController : ControllerBase
     {
         try
         {
-            var removido = await _jogos.RemoverAsync(id);
+            var removido = await _sender.Send(new RemoverJogoCommand(id));
             return removido ? NoContent() : NotFound();
         }
         catch (ConflitoException ex)

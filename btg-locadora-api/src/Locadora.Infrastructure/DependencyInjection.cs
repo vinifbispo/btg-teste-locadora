@@ -6,7 +6,8 @@ using Locadora.Infrastructure.Caching;
 using Locadora.Infrastructure.Http;
 using Locadora.Infrastructure.Idempotencia;
 using Locadora.Infrastructure.Persistence;
-using Locadora.Infrastructure.Persistence.Repositories;
+using Locadora.Infrastructure.Persistence.Repositories.Command;
+using Locadora.Infrastructure.Persistence.Repositories.Query;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,11 @@ public static class DependencyInjection
         services.AddDbContext<LocadoraDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("SqlServerDB"),
                 sql => sql.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null)));
+
+        services.AddDbContext<LocadoraReadDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("SqlServerDB"),
+                    sql => sql.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null))
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
         services.AddStackExchangeRedisCache(options =>
             options.Configuration = configuration.GetConnectionString("Redis"));
@@ -45,6 +51,14 @@ public static class DependencyInjection
         services.AddScoped<IPublicadoraRepository, PublicadoraRepository>();
         services.AddScoped<IAmigoRepository, AmigoRepository>();
         services.AddScoped<IEmprestimoRepository, EmprestimoRepository>();
+
+        services.AddScoped<IJogoQueryRepository, JogoQueryRepository>();
+        services.AddScoped<IGeneroQueryRepository, GeneroQueryRepository>();
+        services.AddScoped<IDesenvolvedorQueryRepository, DesenvolvedorQueryRepository>();
+        services.AddScoped<IPublicadoraQueryRepository, PublicadoraQueryRepository>();
+        services.AddScoped<IAmigoQueryRepository, AmigoQueryRepository>();
+        services.AddScoped<IEmprestimoQueryRepository, EmprestimoQueryRepository>();
+
         services.AddSingleton<IArmazenamentoIdempotencia, ArmazenamentoIdempotenciaRedis>();
 
         services.AddSingleton<IJogoCache, JogoRedisCache>();

@@ -1,5 +1,6 @@
 using Locadora.Application.Dtos;
-using Locadora.Application.Interfaces;
+using Locadora.Application.Commands.Autenticacao.Autenticar;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,11 @@ namespace Locadora.Api.Controllers;
 [Produces("application/json")]
 public class AutenticacaoController : ControllerBase
 {
-    private readonly IAutenticacaoService _autenticacao;
+    private readonly ISender _sender;
 
-    public AutenticacaoController(IAutenticacaoService autenticacao)
+    public AutenticacaoController(ISender sender)
     {
-        _autenticacao = autenticacao;
+        _sender = sender;
     }
 
     [AllowAnonymous]
@@ -23,7 +24,7 @@ public class AutenticacaoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<TokenDto>> Login(LoginInputDto input)
     {
-        var token = await _autenticacao.AutenticarAsync(input);
+        var token = await _sender.Send(new AutenticarCommand(input));
         return token is null ? Unauthorized() : Ok(token);
     }
 }
