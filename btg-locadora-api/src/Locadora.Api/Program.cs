@@ -1,11 +1,12 @@
 using System.Text;
 using Locadora.Api.Validators.Jogos;
 using Locadora.Application;
-using Locadora.Application.Interfaces;
+using Locadora.Application.Commands.Jogos.ImportarJogosExterno;
 using Locadora.Infrastructure;
 using Locadora.Infrastructure.Persistence;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -86,8 +87,8 @@ _ = Task.Run(async () =>
     try
     {
         using var scope = app.Services.CreateScope();
-        var jogoService = scope.ServiceProvider.GetRequiredService<IJogoService>();
-        await jogoService.ImportarDoJogoExternoAsync();
+        var sender = scope.ServiceProvider.GetRequiredService<ISender>();
+        await sender.Send(new ImportarJogosExternoCommand());
     }
     catch (Exception ex)
     {

@@ -1,5 +1,6 @@
 using Locadora.Application.Dtos;
-using Locadora.Application.Interfaces;
+using Locadora.Application.Queries.Desenvolvedores.BuscarDesenvolvedoresPorNome;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +14,11 @@ public class DesenvolvedoresController : ControllerBase
 {
     private const int TamanhoMinimoBusca = 3;
 
-    private readonly IDesenvolvedorService _desenvolvedores;
+    private readonly ISender _sender;
 
-    public DesenvolvedoresController(IDesenvolvedorService desenvolvedores)
+    public DesenvolvedoresController(ISender sender)
     {
-        _desenvolvedores = desenvolvedores;
+        _sender = sender;
     }
 
     [HttpGet]
@@ -28,7 +29,7 @@ public class DesenvolvedoresController : ControllerBase
         if (string.IsNullOrWhiteSpace(busca) || busca.Trim().Length < TamanhoMinimoBusca)
             return BadRequest(new { mensagem = $"Informe ao menos {TamanhoMinimoBusca} letras para realizar a busca." });
 
-        var desenvolvedores = await _desenvolvedores.BuscarPorNomeAsync(busca.Trim());
+        var desenvolvedores = await _sender.Send(new BuscarDesenvolvedoresPorNomeQuery(busca.Trim()));
         return Ok(desenvolvedores);
     }
 }

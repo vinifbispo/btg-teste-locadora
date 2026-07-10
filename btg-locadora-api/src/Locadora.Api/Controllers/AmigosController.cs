@@ -1,6 +1,11 @@
 using Locadora.Application.Dtos;
-using Locadora.Application.Interfaces;
+using Locadora.Application.Commands.Amigos.AtualizarAmigo;
+using Locadora.Application.Commands.Amigos.CriarAmigo;
+using Locadora.Application.Commands.Amigos.RemoverAmigo;
+using Locadora.Application.Queries.Amigos.ListarAmigos;
+using Locadora.Application.Queries.Amigos.ObterAmigoPorId;
 using Locadora.Domain.Exceptions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,18 +17,18 @@ namespace Locadora.Api.Controllers;
 [Authorize]
 public class AmigosController : ControllerBase
 {
-    private readonly IAmigoService _amigos;
+    private readonly ISender _sender;
 
-    public AmigosController(IAmigoService amigos)
+    public AmigosController(ISender sender)
     {
-        _amigos = amigos;
+        _sender = sender;
     }
 
     [HttpGet]
     [ProducesResponseType(typeof(PagedResultDto<AmigoDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResultDto<AmigoDto>>> GetAmigos([FromQuery] string? busca, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var amigos = await _amigos.ListarAsync(busca, page, pageSize);
+        var amigos = await _sender.Send(new ListarAmigosQuery(busca, page, pageSize));
         return Ok(amigos);
     }
 
@@ -32,7 +37,7 @@ public class AmigosController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AmigoDto>> GetAmigo(int id)
     {
-        var amigo = await _amigos.ObterPorIdAsync(id);
+        var amigo = await _sender.Send(new ObterAmigoPorIdQuery(id));
         return amigo is null ? NotFound() : Ok(amigo);
     }
 
@@ -43,7 +48,7 @@ public class AmigosController : ControllerBase
         AmigoInputDto input,
         [FromHeader(Name = "Idempotency-Key")] string? chaveIdempotencia)
     {
-        var amigo = await _amigos.CriarAsync(input, chaveIdempotencia);
+        var amigo = await _sender.Send(new CriarAmigoCommand(input, chaveIdempotencia));
         return CreatedAtAction(nameof(GetAmigo), new { id = amigo.Id }, amigo);
     }
 
@@ -53,7 +58,7 @@ public class AmigosController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAmigo(int id, AmigoInputDto input)
     {
-        var atualizado = await _amigos.AtualizarAsync(id, input);
+        var atualizado = await _sender.Send(new AtualizarAmigoCommand(id, input));
         return atualizado ? NoContent() : NotFound();
     }
 
@@ -65,7 +70,7 @@ public class AmigosController : ControllerBase
     {
         try
         {
-            var removido = await _amigos.RemoverAsync(id);
+            var removido = await _sender.Send(new RemoverAmigoCommand(id));
             return removido ? NoContent() : NotFound();
         }
         catch (ConflitoException ex)

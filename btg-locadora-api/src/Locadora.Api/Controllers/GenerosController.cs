@@ -1,5 +1,6 @@
 using Locadora.Application.Dtos;
-using Locadora.Application.Interfaces;
+using Locadora.Application.Queries.Generos.BuscarGenerosPorNome;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +14,11 @@ public class GenerosController : ControllerBase
 {
     private const int TamanhoMinimoBusca = 3;
 
-    private readonly IGeneroService _generos;
+    private readonly ISender _sender;
 
-    public GenerosController(IGeneroService generos)
+    public GenerosController(ISender sender)
     {
-        _generos = generos;
+        _sender = sender;
     }
 
     [HttpGet]
@@ -28,7 +29,7 @@ public class GenerosController : ControllerBase
         if (string.IsNullOrWhiteSpace(busca) || busca.Trim().Length < TamanhoMinimoBusca)
             return BadRequest(new { mensagem = $"Informe ao menos {TamanhoMinimoBusca} letras para realizar a busca." });
 
-        var generos = await _generos.BuscarPorNomeAsync(busca.Trim());
+        var generos = await _sender.Send(new BuscarGenerosPorNomeQuery(busca.Trim()));
         return Ok(generos);
     }
 }

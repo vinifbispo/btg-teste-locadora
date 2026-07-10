@@ -1,5 +1,6 @@
 using Locadora.Application.Dtos;
-using Locadora.Application.Interfaces;
+using Locadora.Application.Queries.Publicadoras.BuscarPublicadorasPorNome;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +14,11 @@ public class PublicadorasController : ControllerBase
 {
     private const int TamanhoMinimoBusca = 3;
 
-    private readonly IPublicadoraService _publicadoras;
+    private readonly ISender _sender;
 
-    public PublicadorasController(IPublicadoraService publicadoras)
+    public PublicadorasController(ISender sender)
     {
-        _publicadoras = publicadoras;
+        _sender = sender;
     }
 
     [HttpGet]
@@ -28,7 +29,7 @@ public class PublicadorasController : ControllerBase
         if (string.IsNullOrWhiteSpace(busca) || busca.Trim().Length < TamanhoMinimoBusca)
             return BadRequest(new { mensagem = $"Informe ao menos {TamanhoMinimoBusca} letras para realizar a busca." });
 
-        var publicadoras = await _publicadoras.BuscarPorNomeAsync(busca.Trim());
+        var publicadoras = await _sender.Send(new BuscarPublicadorasPorNomeQuery(busca.Trim()));
         return Ok(publicadoras);
     }
 }
