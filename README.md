@@ -21,7 +21,7 @@ Projeto em **.NET 10** seguindo **Clean Architecture**, dividido em quatro camad
 | Camada | Responsabilidade |
 |--------|------------------|
 | **Locadora.Api** | Controllers, validação (FluentValidation) e configuração da API. |
-| **Locadora.Application** | Casos de uso (services), DTOs, mapeamentos e interfaces. Orquestra as regras de negócio. |
+| **Locadora.Application** | Casos de uso via **CQRS** (Commands/Queries e handlers com MediatR), DTOs, mapeamentos e interfaces. Orquestra as regras de negócio. |
 | **Locadora.Domain** | Entidades, enums e contratos de repositório. Sem dependências externas. |
 | **Locadora.Infrastructure** | Acesso a dados (EF Core) e implementação dos repositórios. |
 
@@ -45,6 +45,32 @@ btg-locadora-api/
 - **FluentValidation** (validação na entrada da API)
 - **Swagger** (documentação)
 - **xUnit**, **Moq** e **FluentAssertions** (testes)
+
+### CQRS
+
+A `Locadora.Application` separa **Commands** (escrita) e **Queries** (leitura) usando **MediatR**, cada caso de uso isolado em sua própria pasta:
+
+```
+Locadora.Application/
+├── Commands/
+│   └── {Agregado}/{CasoDeUso}/
+│       ├── {CasoDeUso}Command.cs         # record IRequest<TResult>
+│       └── {CasoDeUso}CommandHandler.cs  # IRequestHandler<TCommand, TResult>
+└── Queries/
+    └── {Agregado}/{CasoDeUso}/
+        ├── {CasoDeUso}Query.cs
+        └── {CasoDeUso}QueryHandler.cs
+```
+
+Essa separação também existe na camada de persistência, com **DbContexts e repositórios dedicados** para cada lado:
+
+| | Escrita (Commands) | Leitura (Queries) |
+|---|---|---|
+| **DbContext** | `LocadoraDbContext` | `LocadoraReadDbContext` (`QueryTrackingBehavior.NoTracking`) |
+| **Repositórios** | `I{Entidade}Repository` → `Persistence/Repositories/Command/{Entidade}Repository.cs` | `I{Entidade}QueryRepository` → `Persistence/Repositories/Query/{Entidade}QueryRepository.cs` (`AsNoTracking()`) |
+| **Usado por** | Command handlers | Query handlers |
+
+Os dois `DbContext` compartilham as mesmas `Configurations/*Configuration.cs` (`ApplyConfigurationsFromAssembly`) e, hoje, apontam para a **mesma** connection string (`ConnectionStrings:SqlServerDB`). A estrutura já permite evoluir para bases físicas diferentes (ex.: um replica de leitura) bastando apontar `LocadoraReadDbContext` para outra connection string — sem precisar alterar Commands, Queries ou handlers.
 
 ## btg-locadora-web
 
