@@ -11,6 +11,8 @@ using Locadora.Infrastructure.Persistence.Repositories.Query;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http.Resilience;
+using Polly;
 using StackExchange.Redis;
 
 namespace Locadora.Infrastructure;
@@ -19,6 +21,19 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.ConfigureHttpClientDefaults(http =>
+        {
+            http.AddResilienceHandler("retry-padrao", builder =>
+            {
+                builder.AddRetry(new HttpRetryStrategyOptions
+                {
+                    MaxRetryAttempts = 3,
+                    BackoffType = DelayBackoffType.Exponential,
+                    Delay = TimeSpan.FromSeconds(2)
+                });
+            });
+        });
+
         services.AddDbContext<LocadoraDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("SqlServerDB"),
                 sql => sql.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null)));
@@ -75,7 +90,7 @@ public static class DependencyInjection
         services.AddHttpClient<IJogoExternoApiClient, JogoExternoApiClient>(client =>
         {
             client.BaseAddress = new Uri(jogoExternoApiBaseUrl);
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.Timeout = TimeSpan.FromSeconds(60);
         });
 
         return services;

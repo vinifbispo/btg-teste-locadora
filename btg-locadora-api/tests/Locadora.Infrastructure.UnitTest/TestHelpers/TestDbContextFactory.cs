@@ -1,7 +1,7 @@
 using Locadora.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Locadora.Application.UnitTest.TestHelpers;
+namespace Locadora.Infrastructure.UnitTest.TestHelpers;
 
 internal static class TestDbContextFactory
 {

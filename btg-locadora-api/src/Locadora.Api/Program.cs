@@ -92,7 +92,7 @@ _ = Task.Run(async () =>
     }
     catch (Exception ex)
     {
-        app.Logger.LogError(ex, "Falha ao importar jogos da API externa em background.");
+        app.Logger.LogError(ex, "Falha ao importar jogos da API externa em background (após as tentativas de retry do HttpClient).");
     }
 });
 

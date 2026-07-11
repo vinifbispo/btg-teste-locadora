@@ -4,6 +4,8 @@ using Locadora.Web.Infrastructure.Http;
 using Locadora.Web.Infrastructure.Http.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http.Resilience;
+using Polly;
 
 namespace Locadora.Web.Infrastructure;
 
@@ -11,6 +13,19 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.ConfigureHttpClientDefaults(http =>
+        {
+            http.AddResilienceHandler("retry-padrao", builder =>
+            {
+                builder.AddRetry(new HttpRetryStrategyOptions
+                {
+                    MaxRetryAttempts = 3,
+                    BackoffType = DelayBackoffType.Exponential,
+                    Delay = TimeSpan.FromSeconds(2)
+                });
+            });
+        });
+
         var apiBaseUrl = configuration["ApiBaseUrl"]
             ?? throw new InvalidOperationException("Configuração 'ApiBaseUrl' não encontrada.");
 

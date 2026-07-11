@@ -1,8 +1,8 @@
-using Locadora.Application.UnitTest.TestHelpers;
+using Locadora.Infrastructure.UnitTest.TestHelpers;
 using Locadora.Domain.Entities;
 using Locadora.Infrastructure.Persistence.Repositories.Query;
 
-namespace Locadora.Application.UnitTest.Repositories.Query;
+namespace Locadora.Infrastructure.UnitTest.Repositories.Query;
 
 public class GeneroQueryRepositoryTests
 {
