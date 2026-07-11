@@ -3,6 +3,7 @@ using Locadora.Application.Dtos;
 using Locadora.Application.Commands.Amigos.CriarAmigo;
 using Locadora.Domain.Caching;
 using Locadora.Domain.Entities;
+using Locadora.Domain.Exceptions;
 using Locadora.Domain.Idempotencia;
 using Locadora.Domain.Repositories;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,11 @@ public class CriarAmigoCommandHandlerTests
     private readonly Mock<IAmigoRepository> _amigos = new();
     private readonly Mock<IAmigoCache> _cache = new();
     private readonly Mock<IArmazenamentoIdempotencia> _idempotencia = new();
+
+    public CriarAmigoCommandHandlerTests()
+    {
+        _idempotencia.Setup(i => i.TentarReservarAsync(It.IsAny<string>())).ReturnsAsync(true);
+    }
 
     private CriarAmigoCommandHandler CriarHandler() => new(
         _amigos.Object,
@@ -59,5 +65,19 @@ public class CriarAmigoCommandHandlerTests
         await handler.Handle(new CriarAmigoCommand(input, ChaveIdempotencia: "chave-2"), CancellationToken.None);
 
         _idempotencia.Verify(i => i.ArmazenarAsync("amigo:criar:chave-2", It.IsAny<string>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_DeveLancarConflitoExceptionQuandoChaveIdempotenciaJaEstaSendoProcessada()
+    {
+        _idempotencia.Setup(i => i.ObterAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
+        _idempotencia.Setup(i => i.TentarReservarAsync("amigo:criar:chave-3")).ReturnsAsync(false);
+
+        var handler = CriarHandler();
+
+        await FluentActions.Awaiting(() => handler.Handle(new CriarAmigoCommand(new AmigoInputDto(), ChaveIdempotencia: "chave-3"), CancellationToken.None))
+            .Should().ThrowAsync<ConflitoException>();
+
+        _amigos.Verify(r => r.AdicionarAsync(It.IsAny<Amigo>()), Times.Never);
     }
 }

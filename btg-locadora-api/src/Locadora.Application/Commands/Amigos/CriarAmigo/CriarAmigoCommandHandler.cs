@@ -3,6 +3,7 @@ using Locadora.Application.Idempotencia;
 using Locadora.Application.Mappings;
 using Locadora.Domain.Caching;
 using Locadora.Domain.Entities;
+using Locadora.Domain.Exceptions;
 using Locadora.Domain.Idempotencia;
 using Locadora.Domain.Repositories;
 using MediatR;
@@ -36,6 +37,12 @@ public class CriarAmigoCommandHandler : IRequestHandler<CriarAmigoCommand, Amigo
         {
             _logger.LogInformation("Criação de amigo idempotente: retornando resultado já existente para a chave {ChaveIdempotencia}.", request.ChaveIdempotencia);
             return existente;
+        }
+
+        if (!await ExecutorIdempotente.ReservarAsync(_idempotencia, "amigo:criar", request.ChaveIdempotencia))
+        {
+            _logger.LogWarning("Criação de amigo bloqueada: já existe uma requisição em processamento para a chave {ChaveIdempotencia}.", request.ChaveIdempotencia);
+            throw new ConflitoException("Já existe uma requisição idêntica em processamento.");
         }
 
         var input = request.Input;

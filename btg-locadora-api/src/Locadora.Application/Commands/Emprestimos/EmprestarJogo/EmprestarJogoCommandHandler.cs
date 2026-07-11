@@ -45,6 +45,12 @@ public class EmprestarJogoCommandHandler : IRequestHandler<EmprestarJogoCommand,
             return existente;
         }
 
+        if (!await ExecutorIdempotente.ReservarAsync(_idempotencia, "emprestimo:criar", request.ChaveIdempotencia))
+        {
+            _logger.LogWarning("Criação de empréstimo bloqueada: já existe uma requisição em processamento para a chave {ChaveIdempotencia}.", request.ChaveIdempotencia);
+            throw new ConflitoException("Já existe uma requisição idêntica em processamento.");
+        }
+
         var input = request.Input;
 
         var jogo = await _jogos.ObterPorIdAsync(input.JogoId);

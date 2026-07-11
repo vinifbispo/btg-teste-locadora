@@ -19,6 +19,11 @@ public class CriarJogoCommandHandlerTests
     private readonly Mock<IJogoCache> _cache = new();
     private readonly Mock<IArmazenamentoIdempotencia> _idempotencia = new();
 
+    public CriarJogoCommandHandlerTests()
+    {
+        _idempotencia.Setup(i => i.TentarReservarAsync(It.IsAny<string>())).ReturnsAsync(true);
+    }
+
     private CriarJogoCommandHandler CriarHandler() => new(
         _jogos.Object,
         _generos.Object,
@@ -113,5 +118,19 @@ public class CriarJogoCommandHandlerTests
         await handler.Handle(new CriarJogoCommand(input, ChaveIdempotencia: "chave-2"), CancellationToken.None);
 
         _idempotencia.Verify(i => i.ArmazenarAsync("jogo:criar:chave-2", It.IsAny<string>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_DeveLancarConflitoExceptionQuandoChaveIdempotenciaJaEstaSendoProcessada()
+    {
+        _idempotencia.Setup(i => i.ObterAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
+        _idempotencia.Setup(i => i.TentarReservarAsync("jogo:criar:chave-3")).ReturnsAsync(false);
+
+        var handler = CriarHandler();
+
+        await FluentActions.Awaiting(() => handler.Handle(new CriarJogoCommand(new JogoInputDto(), ChaveIdempotencia: "chave-3"), CancellationToken.None))
+            .Should().ThrowAsync<ConflitoException>();
+
+        _jogos.Verify(r => r.AdicionarAsync(It.IsAny<Jogo>()), Times.Never);
     }
 }

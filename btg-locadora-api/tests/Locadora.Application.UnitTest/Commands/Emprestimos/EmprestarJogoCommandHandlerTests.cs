@@ -18,6 +18,11 @@ public class EmprestarJogoCommandHandlerTests
     private readonly Mock<IEmprestimoCache> _cache = new();
     private readonly Mock<IArmazenamentoIdempotencia> _idempotencia = new();
 
+    public EmprestarJogoCommandHandlerTests()
+    {
+        _idempotencia.Setup(i => i.TentarReservarAsync(It.IsAny<string>())).ReturnsAsync(true);
+    }
+
     private EmprestarJogoCommandHandler CriarHandler() => new(
         _emprestimos.Object,
         _jogos.Object,
@@ -102,5 +107,19 @@ public class EmprestarJogoCommandHandlerTests
 
         await FluentActions.Awaiting(() => handler.Handle(new EmprestarJogoCommand(new EmprestimoInputDto { JogoId = 1, AmigoId = 2 }, ChaveIdempotencia: null), CancellationToken.None))
             .Should().ThrowAsync<ConflitoException>();
+    }
+
+    [Fact]
+    public async Task Handle_DeveLancarConflitoExceptionQuandoChaveIdempotenciaJaEstaSendoProcessada()
+    {
+        _idempotencia.Setup(i => i.ObterAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
+        _idempotencia.Setup(i => i.TentarReservarAsync("emprestimo:criar:chave-3")).ReturnsAsync(false);
+
+        var handler = CriarHandler();
+
+        await FluentActions.Awaiting(() => handler.Handle(new EmprestarJogoCommand(new EmprestimoInputDto { JogoId = 1, AmigoId = 2 }, ChaveIdempotencia: "chave-3"), CancellationToken.None))
+            .Should().ThrowAsync<ConflitoException>();
+
+        _emprestimos.Verify(r => r.AdicionarAsync(It.IsAny<Emprestimo>()), Times.Never);
     }
 }

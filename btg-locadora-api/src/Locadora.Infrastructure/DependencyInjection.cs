@@ -11,6 +11,7 @@ using Locadora.Infrastructure.Persistence.Repositories.Query;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace Locadora.Infrastructure;
 
@@ -29,6 +30,9 @@ public static class DependencyInjection
 
         services.AddStackExchangeRedisCache(options =>
             options.Configuration = configuration.GetConnectionString("Redis"));
+
+        services.AddSingleton<IConnectionMultiplexer>(_ =>
+            ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")!));
 
         services.Configure<IdempotenciaSettings>(options =>
         {

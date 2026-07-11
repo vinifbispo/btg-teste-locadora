@@ -14,6 +14,14 @@ internal static class ExecutorIdempotente
         return existente is null ? default : JsonSerializer.Deserialize<TDto>(existente);
     }
 
+    public static Task<bool> ReservarAsync(IArmazenamentoIdempotencia store, string escopo, string? chaveIdempotencia)
+    {
+        if (string.IsNullOrWhiteSpace(chaveIdempotencia))
+            return Task.FromResult(true);
+
+        return store.TentarReservarAsync(Chave(escopo, chaveIdempotencia));
+    }
+
     public static async Task SalvarAsync<TDto>(IArmazenamentoIdempotencia store, string escopo, string? chaveIdempotencia, TDto resultado)
     {
         if (string.IsNullOrWhiteSpace(chaveIdempotencia))
