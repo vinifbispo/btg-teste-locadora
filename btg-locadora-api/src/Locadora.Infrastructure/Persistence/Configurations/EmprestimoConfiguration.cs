@@ -19,5 +19,10 @@ public class EmprestimoConfiguration : IEntityTypeConfiguration<Emprestimo>
             .WithMany()
             .HasForeignKey(e => e.AmigoId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(e => e.JogoId)
+            .IsUnique()
+            .HasFilter("[DataDevolucao] IS NULL")
+            .HasDatabaseName("IX_Emprestimos_JogoId_Ativo");
     }
 }
