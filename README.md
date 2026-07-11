@@ -4,6 +4,17 @@
 
 Sistema para gerenciar os empréstimos dos seus jogos. Permite a inserção/edição/exclusão de amigos e jogos, além do gerenciamento e visualização dos jogos, dos amigos e de qual jogo está com quem.
 
+## 🌐 Ambiente publicado
+
+A aplicação está publicada no Azure App Service:
+
+| Serviço | URL |
+|---------|-----|
+| **Front-end (Web)** | https://front-btg-locadora-vinicius-bispo-bah8dkarebewcgf8.westeurope-01.azurewebsites.net/ |
+| **API REST (Swagger)** | https://api-btg-locadora-vinicius-bispo-fcgsfracdpamccbs.westeurope-01.azurewebsites.net/swagger/index.html |
+
+Nesse ambiente, `ConnectionStrings`, `Jwt:SecretKey` e `AdminCredenciais` **não** vêm dos `appsettings.json` do repositório — são configurados como *Application Settings* (secrets) diretamente no Azure App Service, que o ASP.NET Core carrega como variáveis de ambiente e sobrepõe automaticamente aos valores do `appsettings.json`. Os valores versionados no repositório servem apenas para rodar o projeto localmente (via `dotnet run` ou `docker compose`).
+
 ## 📦 Estrutura do repositório
 
 O repositório é dividido em dois projetos independentes, um por camada de apresentação:
