@@ -1,12 +1,12 @@
 using System.Text;
+using Hangfire;
 using Locadora.Api.Validators.Jogos;
 using Locadora.Application;
-using Locadora.Application.Commands.Jogos.ImportarJogosExterno;
 using Locadora.Infrastructure;
 using Locadora.Infrastructure.Persistence;
+using Locadora.Jobs;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -82,19 +82,7 @@ var app = builder.Build();
 
 await DatabaseInitializer.InitializeAsync(app.Services);
 
-_ = Task.Run(async () =>
-{
-    try
-    {
-        using var scope = app.Services.CreateScope();
-        var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-        await sender.Send(new ImportarJogosExternoCommand());
-    }
-    catch (Exception ex)
-    {
-        app.Logger.LogError(ex, "Falha ao importar jogos da API externa em background (após as tentativas de retry do HttpClient).");
-    }
-});
+await HangfireInitializer.InitializeAsync(app.Configuration, app.Services.GetRequiredService<IBackgroundJobClient>());
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

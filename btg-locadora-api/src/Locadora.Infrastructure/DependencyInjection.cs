@@ -1,3 +1,5 @@
+using Hangfire;
+using Hangfire.SqlServer;
 using Locadora.Domain.Caching;
 using Locadora.Domain.Idempotencia;
 using Locadora.Domain.Integracoes;
@@ -33,6 +35,16 @@ public static class DependencyInjection
                 });
             });
         });
+
+        services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(configuration.GetConnectionString("SqlServerDB"), new SqlServerStorageOptions
+            {
+                PrepareSchemaIfNecessary = false
+            }));
+        services.AddHangfireServer();
 
         services.AddDbContext<LocadoraDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("SqlServerDB"),

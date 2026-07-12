@@ -6,6 +6,7 @@ COPY src/Locadora.Api/Locadora.Api.csproj src/Locadora.Api/
 COPY src/Locadora.Application/Locadora.Application.csproj src/Locadora.Application/
 COPY src/Locadora.Domain/Locadora.Domain.csproj src/Locadora.Domain/
 COPY src/Locadora.Infrastructure/Locadora.Infrastructure.csproj src/Locadora.Infrastructure/
+COPY src/Locadora.Jobs/Locadora.Jobs.csproj src/Locadora.Jobs/
 RUN dotnet restore src/Locadora.Api/Locadora.Api.csproj
 
 COPY . .

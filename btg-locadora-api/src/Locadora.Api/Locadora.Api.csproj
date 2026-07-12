@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Locadora.Application\Locadora.Application.csproj" />
     <ProjectReference Include="..\Locadora.Infrastructure\Locadora.Infrastructure.csproj" />
+    <ProjectReference Include="..\Locadora.Jobs\Locadora.Jobs.csproj" />
   </ItemGroup>
 
 </Project>
